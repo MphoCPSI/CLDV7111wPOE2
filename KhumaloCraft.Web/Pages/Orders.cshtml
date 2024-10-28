@@ -35,7 +35,10 @@
               <p class="mb-0"><strong>Total (Including VAT):</strong> @totalWithVat.ToString("C", cultureInfo)</p>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-4">
-              <p class="mb-1">@order.StatusName</p>
+              <button class="me-2 btn btn-info" type="button" aria-expanded="false">
+                @order.StatusName
+              </button>
+
               <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#orderItems-@order.OrderId" aria-expanded="false">
                 View Items
               </button>

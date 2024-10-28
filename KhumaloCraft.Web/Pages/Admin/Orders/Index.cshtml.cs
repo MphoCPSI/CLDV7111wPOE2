@@ -9,7 +9,7 @@ namespace KhumaloCraft.Web.Pages.Admin.Orders
   public class IndexModel : PageModel
   {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<IndexModel> _logger;  // Inject logger service
+    private readonly ILogger<IndexModel> _logger;
 
     public List<OrderDisplayDTO> Orders { get; set; } = new List<OrderDisplayDTO>();
     public List<StatusDTO> StatusList { get; set; } = new List<StatusDTO>();
@@ -19,7 +19,7 @@ namespace KhumaloCraft.Web.Pages.Admin.Orders
     public IndexModel(IHttpClientFactory httpClientFactory, ILogger<IndexModel> logger)
     {
       _httpClient = httpClientFactory.CreateClient("BusinessAPI");
-      _logger = logger;  // Initialize logger
+      _logger = logger;
     }
 
     public async Task OnGetAsync()
@@ -48,8 +48,8 @@ namespace KhumaloCraft.Web.Pages.Admin.Orders
         return Page();
       }
 
-      var updateStatus = new { StatusId = statusId };
-      var jsonStatus = JsonSerializer.Serialize(updateStatus);
+      var statusDTO = new StatusDTO { StatusId = statusId };
+      var jsonStatus = JsonSerializer.Serialize(statusDTO);
       var content = new StringContent(jsonStatus, Encoding.UTF8, "application/json");
 
       var response = await _httpClient.PutAsync($"/api/orders/{orderId}/status", content);

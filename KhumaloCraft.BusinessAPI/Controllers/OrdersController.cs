@@ -46,9 +46,9 @@ namespace KhumaloCraft.BusinessAPI.Controllers
 
     [HttpPut("{orderId}/status")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateStatus(int orderId, int statusId)
+    public async Task<IActionResult> UpdateStatus(int orderId, [FromBody] StatusDTO statusDTO)
     {
-      await _orderService.UpdateOrderStatusAsync(orderId, statusId);
+      await _orderService.UpdateOrderStatusAsync(orderId, statusDTO.StatusId);
       return Ok("Order status updated successfully");
     }
   }

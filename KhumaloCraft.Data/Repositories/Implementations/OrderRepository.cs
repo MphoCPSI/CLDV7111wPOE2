@@ -20,6 +20,7 @@ public class OrderRepository : IOrderRepository
       .Include(o => o.OrderItems)
       .ThenInclude(oi => oi.Product)
       .Include(o => o.User)
+      .Include(o => o.Status)
       .ToListAsync();
   }
 
@@ -28,6 +29,7 @@ public class OrderRepository : IOrderRepository
     return await _dbContext.Orders
         .Include(o => o.OrderItems)
         .ThenInclude(oi => oi.Product)
+        .Include(o => o.Status)
         .Where(o => o.UserId == userId)
         .ToListAsync();
   }
