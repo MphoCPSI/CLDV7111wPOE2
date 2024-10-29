@@ -31,5 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="..\KhumaloCraft.Data\KhumaloCraft.Data.csproj" />
     <ProjectReference Include="..\KhumaloCraft.Shared\KhumaloCraft.Shared.csproj" />
+    <ProjectReference Include="..\KhumaloCraft.Business\KhumaloCraft.Business.csproj" />
   </ItemGroup>
 </Project>

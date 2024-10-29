@@ -1,3 +1,4 @@
+using KhumaloCraft.Shared.DTOs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
@@ -19,7 +20,9 @@ public class OrderProcessingStarter
   {
     _logger.LogInformation("Starting the Order orchestration.");
 
-    string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("OrderProcessingOrchestrator");
+    var orderDTO = await req.ReadFromJsonAsync<OrderDTO>();
+
+    string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("OrderProcessingOrchestrator", orderDTO);
 
     var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
     await response.WriteStringAsync($"Orchestration started with ID = '{instanceId}'.");

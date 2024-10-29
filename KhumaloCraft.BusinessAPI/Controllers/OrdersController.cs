@@ -1,4 +1,5 @@
 using KhumaloCraft.Business.Interfaces;
+using KhumaloCraft.Business.Services;
 using KhumaloCraft.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace KhumaloCraft.BusinessAPI.Controllers
   public class OrdersController : ControllerBase
   {
     private readonly IOrderService _orderService;
+    private readonly IFunctionTriggerService _functionTriggerService;
 
-    public OrdersController(IOrderService orderService)
+    public OrdersController(IOrderService orderService, IFunctionTriggerService functionTriggerService)
     {
       _orderService = orderService;
+      _functionTriggerService = functionTriggerService;
     }
 
     [HttpGet("user/{userId}")]
@@ -40,8 +43,16 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     [HttpPost("create")]
     public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDTO)
     {
-      await _orderService.AddOrder(orderDTO);
-      return Ok("Order added successfully");
+      try
+      {
+        await _orderService.AddOrder(orderDTO);
+        var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(orderDTO);
+        return Ok(new { message = "Orchestrator started", details = response });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, new { error = ex.Message });
+      }
     }
 
     [HttpPut("{orderId}/status")]
@@ -49,7 +60,7 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     public async Task<IActionResult> UpdateStatus(int orderId, [FromBody] StatusDTO statusDTO)
     {
       await _orderService.UpdateOrderStatusAsync(orderId, statusDTO.StatusId);
-      return Ok("Order status updated successfully");
+      return Ok($"Order status updated successfully.");
     }
   }
 }

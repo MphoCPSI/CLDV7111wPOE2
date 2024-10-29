@@ -14,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var dbConnection = Environment.GetEnvironmentVariable("AZURE_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Register HttpClient for IHttpClientFactory
+builder.Services.AddHttpClient();
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(dbConnection));
@@ -66,6 +69,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<IFunctionTriggerService, FunctionTriggerService>();
+
 builder.Services.AddHostedService<CartCleanupService>();
 
 var app = builder.Build();

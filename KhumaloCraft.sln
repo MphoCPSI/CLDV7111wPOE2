@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.Web", ".\KhumaloCraft.Web\KhumaloCraft.Web.csproj", "{01155C1E-8BE3-44F9-AC0A-3D1C4DFFEF64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.Web", "KhumaloCraft.Web\KhumaloCraft.Web.csproj", "{01155C1E-8BE3-44F9-AC0A-3D1C4DFFEF64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhumaloCraft.Data", ".\KhumaloCraft.Data\KhumaloCraft.Data.csproj", "{5F971376-D892-44DE-9E66-14557B9EF6A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.Data", "KhumaloCraft.Data\KhumaloCraft.Data.csproj", "{5F971376-D892-44DE-9E66-14557B9EF6A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhumaloCraft.Business", ".\KhumaloCraft.Business\KhumaloCraft.Business.csproj", "{9914A16F-9618-46E0-BADF-786A2563A5F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.Business", "KhumaloCraft.Business\KhumaloCraft.Business.csproj", "{9914A16F-9618-46E0-BADF-786A2563A5F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhumaloCraft.BusinessAPI", ".\KhumaloCraft.BusinessAPI\KhumaloCraft.BusinessAPI.csproj", "{98945DE8-AD22-40BF-9984-EDF1DA8B384B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.BusinessAPI", "KhumaloCraft.BusinessAPI\KhumaloCraft.BusinessAPI.csproj", "{98945DE8-AD22-40BF-9984-EDF1DA8B384B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhumaloCraft.Shared", "KhumaloCraft.Shared\KhumaloCraft.Shared.csproj", "{38CB037E-4CE6-42E2-936B-B39C6FFC6387}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KhumaloCraft.Shared", "KhumaloCraft.Shared\KhumaloCraft.Shared.csproj", "{38CB037E-4CE6-42E2-936B-B39C6FFC6387}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KhumaloCraft.BusinessFunctions", "KhumaloCraft.BusinessFunctions\KhumaloCraft.BusinessFunctions.csproj", "{9E9E9CD4-DFBD-4F91-8B97-BEB13105875A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{38CB037E-4CE6-42E2-936B-B39C6FFC6387}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38CB037E-4CE6-42E2-936B-B39C6FFC6387}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38CB037E-4CE6-42E2-936B-B39C6FFC6387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E9E9CD4-DFBD-4F91-8B97-BEB13105875A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9E9CD4-DFBD-4F91-8B97-BEB13105875A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9E9CD4-DFBD-4F91-8B97-BEB13105875A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9E9CD4-DFBD-4F91-8B97-BEB13105875A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
