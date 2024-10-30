@@ -91,4 +91,27 @@ public class ProductService : IProductService
     await _productRepository.DeleteProductAsync(product);
     await _productRepository.SaveChangesAsync();
   }
+
+  public async Task UpdateInventory(List<CartItemDTO> cartItems)
+  {
+    foreach (var item in cartItems)
+    {
+      var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+
+      if (product == null)
+      {
+        continue;
+      }
+
+      if (product.Quantity < item.Quantity)
+      {
+        throw new InvalidOperationException($"Insufficient stock for {item.ProductName}");
+      }
+
+      product.Quantity -= item.Quantity;
+      await _productRepository.UpdateProductAsync(product);
+    }
+
+    await _productRepository.SaveChangesAsync();
+  }
 }

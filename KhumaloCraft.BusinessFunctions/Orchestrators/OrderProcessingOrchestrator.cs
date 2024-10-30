@@ -1,3 +1,4 @@
+using KhumaloCraft.Shared.DTOs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 
@@ -10,8 +11,13 @@ public static class OrderProcessingOrchestrator
   {
     var cartId = context.GetInput<string>();
 
-    await context.CallActivityAsync("GetCartDetails", cartId);
-    await context.CallActivityAsync("ProcessPayment", cartId);
-    await context.CallActivityAsync("UpdateInventory", cartId);
+    var cartItems = await context.CallActivityAsync<CartDTO>("GetCartDetails", cartId);
+    var cartItemsJson = System.Text.Json.JsonSerializer.Serialize(cartItems);
+    Console.WriteLine($"Fetched CartItems: {cartItemsJson}");
+
+    // await context.CallActivityAsync("ProcessPayment", cartItems);
+
+    var updateStatus = await context.CallActivityAsync<string>("UpdateInventory", cartItems);
+    Console.WriteLine($"Updated CartItems: {updateStatus}");
   }
 }
