@@ -19,7 +19,7 @@ public class NotificationsStarter
   {
     _logger.LogInformation("Starting the Order orchestration.");
 
-    string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("OrderProcessingOrchestrator");
+    string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("NotificationsOrchestrator");
 
     var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
     await response.WriteStringAsync($"Orchestration started with ID = '{instanceId}'.");
