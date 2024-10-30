@@ -1,4 +1,3 @@
-using KhumaloCraft.Shared.DTOs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 
@@ -9,8 +8,10 @@ public static class OrderProcessingOrchestrator
   [Function("OrderProcessingOrchestrator")]
   public static async Task Run([OrchestrationTrigger] TaskOrchestrationContext context)
   {
-    var orderDTO = context.GetInput<OrderDTO>();
+    var cartId = context.GetInput<string>();
 
-    await context.CallActivityAsync("UpdateInventory", orderDTO);
+    await context.CallActivityAsync("GetCartDetails", cartId);
+    await context.CallActivityAsync("ProcessPayment", cartId);
+    await context.CallActivityAsync("UpdateInventory", cartId);
   }
 }

@@ -41,12 +41,13 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDTO)
+    public async Task<IActionResult> CreateOrder([FromBody] CartRequestDTO cartRequestDTO)
     {
+      Console.WriteLine($"Received CartId: {cartRequestDTO.CartId}");
       try
       {
-        await _orderService.AddOrder(orderDTO);
-        var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(orderDTO);
+        var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(cartRequestDTO);
+
         return Ok(new { message = "Orchestrator started", details = response });
       }
       catch (Exception ex)

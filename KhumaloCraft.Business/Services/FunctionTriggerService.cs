@@ -17,11 +17,10 @@ public class FunctionTriggerService : IFunctionTriggerService
     _configuration = configuration;
   }
 
-  public async Task<string> StartOrderProcessingOrchestratorAsync(OrderDTO orderData)
+  public async Task<string> StartOrderProcessingOrchestratorAsync(CartRequestDTO requestDTO)
   {
     var functionUrl = _configuration["AzureFunctions:OrderProcessingOrchestratorUrl"];
-    Console.WriteLine("FunctionUrl: {0}", functionUrl);
-    return await TriggerFunctionAsync(functionUrl, orderData);
+    return await TriggerFunctionAsync(functionUrl, requestDTO);
   }
 
   private async Task<string> TriggerFunctionAsync(string functionUrl, object payload)

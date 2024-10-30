@@ -2,12 +2,12 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace KhumaloCraft.BusinessFunctions.Activities;
 
-public static class ProcessPaymentActivity
+public static class GetCartDetailsActivity
 {
-  [Function("ProcessPayment")]
+  [Function("GetCartDetails")]
   public static Task<string> Run([ActivityTrigger] string cartId)
   {
     Console.WriteLine("CartId: {0}", cartId);
-    return Task.FromResult($"Processing Payment for CartId: {cartId}");
+    return Task.FromResult($"fetching the cart: {cartId}");
   }
 }

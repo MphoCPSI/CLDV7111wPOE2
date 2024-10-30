@@ -4,5 +4,5 @@ namespace KhumaloCraft.Business.Interfaces;
 
 public interface IFunctionTriggerService
 {
-    Task<string> StartOrderProcessingOrchestratorAsync(OrderDTO orderDTO);
+    Task<string> StartOrderProcessingOrchestratorAsync(CartRequestDTO requestDTO);
 }
