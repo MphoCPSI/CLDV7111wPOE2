@@ -107,7 +107,6 @@ namespace KhumaloCraft.Web.Pages
       }
       catch (Exception ex)
       {
-        Console.WriteLine("EX: " + ex.Message);
         await OnGetAsync();
         TempData["ToastMessage"] = "An error occurred. Please try again.";
         return Page();

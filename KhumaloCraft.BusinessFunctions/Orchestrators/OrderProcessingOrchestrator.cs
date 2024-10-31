@@ -22,7 +22,15 @@ public static class OrderProcessingOrchestrator
       return Response<string>.ErrorResponse(cartItemsResponse.Message);
     }
 
-    // Place the order
+    var ProcessOrderResponse = await context.CallActivityAsync<Response<string>>("ProcessOrder", cartItemsResponse.Data);
+
+    Console.WriteLine($"PROCESS ORDER Success: {ProcessOrderResponse.Success}");
+    Console.WriteLine($"PROCESS ORDER Message: {ProcessOrderResponse.Message}");
+
+    if (!ProcessOrderResponse.Success)
+    {
+      return Response<string>.ErrorResponse(ProcessOrderResponse.Message);
+    }
 
     var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
 

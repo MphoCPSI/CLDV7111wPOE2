@@ -19,6 +19,14 @@ public class CartRepository : ICartRepository
     return _dbContext.Carts.Include(c => c.Items).FirstOrDefault(c => c.CartId == cartId || c.UserId == cartId);
   }
 
+  public async Task<string> GetUserByCartIdAsync(string cartId)
+  {
+    return await _dbContext.Carts
+        .Where(c => c.CartId == cartId)
+        .Select(c => c.UserId)
+        .FirstOrDefaultAsync();
+  }
+
   public void SaveCart(Cart cart)
   {
     var existingCart = _dbContext.Carts.Find(cart.CartId);
