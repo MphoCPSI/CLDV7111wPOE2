@@ -46,6 +46,25 @@ new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
   <script src="~/js/site.js" asp-append-version="true"></script>
 
   @await RenderSectionAsync("Scripts", required: false)
+
+  <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 2000">
+    <div id="snackbarToast" class="toast bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+      <div class="toast-header">
+        <strong class="me-auto">Notification</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body fw-bold">
+        <!-- Message will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  @if (TempData["ToastMessage"] != null)
+  {
+    <script>
+      showToast("@TempData["ToastMessage"]");
+    </script>
+  }
 </body>
 
 </html>

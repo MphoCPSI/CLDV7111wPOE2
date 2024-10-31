@@ -64,10 +64,17 @@
 
       <!-- Place Order Button -->
       <div class="d-flex justify-content-end mt-4">
-        <form method="post" asp-page-handler="CheckoutCart">
-          <input type="hidden" name="cartId" value="@Model.Cart.CartId" />
-          <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-2">Place Order</button>
-        </form>
+        @if (User.Identity.IsAuthenticated)
+        {
+          <form method="post" asp-page-handler="CheckoutCart">
+            <input type="hidden" name="cartId" value="@Model.Cart.CartId" />
+            <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-2">Place Order</button>
+          </form>
+        }
+        else
+        {
+          <a href="/Auth/Login" class="btn btn-primary btn-lg fw-bold px-5 py-2">Log in to Place Order</a>
+        }
       </div>
     }
   </div>

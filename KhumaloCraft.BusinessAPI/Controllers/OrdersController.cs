@@ -1,5 +1,4 @@
 using KhumaloCraft.Business.Interfaces;
-using KhumaloCraft.Business.Services;
 using KhumaloCraft.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,16 +42,19 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     [HttpPost("create")]
     public async Task<IActionResult> CreateOrder([FromBody] CartRequestDTO cartRequestDTO)
     {
-      Console.WriteLine($"Received CartId: {cartRequestDTO.CartId}");
       try
       {
         var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(cartRequestDTO);
 
-        return Ok(new { message = "Orchestrator started", details = response });
+        Console.WriteLine("Response Success: {0}", response.Success);
+        Console.WriteLine("Response Message: {0}", response.Message);
+        Console.WriteLine("Response Data: {0}", response.Data ?? "No Data");
+
+        return Accepted(response);
       }
       catch (Exception ex)
       {
-        return StatusCode(500, new { error = ex.Message });
+        return StatusCode(500, new { Success = false, Message = $"An internal error occurred: {ex.Message}" });
       }
     }
 

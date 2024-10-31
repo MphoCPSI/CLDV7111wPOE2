@@ -17,26 +17,35 @@ public class FunctionTriggerService : IFunctionTriggerService
     _configuration = configuration;
   }
 
-  public async Task<string> StartOrderProcessingOrchestratorAsync(CartRequestDTO requestDTO)
+  public async Task<Response<string>> StartOrderProcessingOrchestratorAsync(CartRequestDTO requestDTO)
   {
     var functionUrl = _configuration["AzureFunctions:OrderProcessingOrchestratorUrl"];
     return await TriggerFunctionAsync(functionUrl, requestDTO);
   }
 
-  private async Task<string> TriggerFunctionAsync(string functionUrl, object payload)
+  private async Task<Response<string>> TriggerFunctionAsync(string functionUrl, object payload)
   {
     var jsonPayload = JsonSerializer.Serialize(payload);
     var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-    var response = await _httpClient.PostAsync(functionUrl, content);
-
-    if (response.IsSuccessStatusCode)
+    try
     {
-      return await response.Content.ReadAsStringAsync();
+      var response = await _httpClient.PostAsync(functionUrl, content);
+
+      if (response.IsSuccessStatusCode)
+      {
+        var result = await response.Content.ReadAsStringAsync();
+        return Response<string>.SuccessResponse(result);
+      }
+      else
+      {
+        var errorMessage = await response.Content.ReadAsStringAsync();
+        return Response<string>.ErrorResponse($"Failed to trigger function at {functionUrl}: {response.ReasonPhrase}. Details: {errorMessage}");
+      }
     }
-
-    throw new Exception($"Failed to trigger function at {functionUrl}: {response.ReasonPhrase}");
-
+    catch (Exception ex)
+    {
+      return Response<string>.ErrorResponse($"An error occurred while triggering the function: {ex.Message}");
+    }
   }
-
 }

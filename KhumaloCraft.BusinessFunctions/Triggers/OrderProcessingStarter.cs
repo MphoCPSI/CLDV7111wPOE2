@@ -16,7 +16,9 @@ public class OrderProcessingStarter
   }
 
   [Function("StartOrderOrchestration")]
-  public async Task<HttpResponseData> InitiateOrder([HttpTrigger(AuthorizationLevel.Function, "post", Route = "start-order-orchestration")] HttpRequestData req, [DurableClient] DurableTaskClient client)
+  public async Task<HttpResponseData> InitiateOrder(
+      [HttpTrigger(AuthorizationLevel.Function, "post", Route = "start-order-orchestration")] HttpRequestData req,
+      [DurableClient] DurableTaskClient client)
   {
     _logger.LogInformation("Starting the Order orchestration.");
 
@@ -28,10 +30,19 @@ public class OrderProcessingStarter
       return badResponse;
     }
 
+    // Start the orchestration
     string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("OrderProcessingOrchestrator", cartRequestDTO.CartId);
 
-    var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
-    await response.WriteStringAsync($"Orchestration started with ID = '{instanceId}'.");
+    // Construct the polling URL manually
+    string baseUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") ?? "localhost:7071";
+    string statusQueryGetUri = $"http://{baseUrl}/runtime/webhooks/durabletask/instances/{instanceId}";
+
+    var response = req.CreateResponse(System.Net.HttpStatusCode.Accepted);
+    await response.WriteAsJsonAsync(new
+    {
+      instanceId,
+      statusQueryGetUri
+    });
 
     return response;
   }

@@ -6,18 +6,36 @@ namespace KhumaloCraft.BusinessFunctions;
 
 public static class OrderProcessingOrchestrator
 {
+
   [Function("OrderProcessingOrchestrator")]
-  public static async Task Run([OrchestrationTrigger] TaskOrchestrationContext context)
+  public static async Task<Response<string>> Run([OrchestrationTrigger] TaskOrchestrationContext context)
   {
     var cartId = context.GetInput<string>();
 
-    var cartItems = await context.CallActivityAsync<CartDTO>("GetCartDetails", cartId);
-    var cartItemsJson = System.Text.Json.JsonSerializer.Serialize(cartItems);
-    Console.WriteLine($"Fetched CartItems: {cartItemsJson}");
+    var cartItemsResponse = await context.CallActivityAsync<Response<CartDTO>>("GetCartDetails", cartId);
 
-    // await context.CallActivityAsync("ProcessPayment", cartItems);
+    Console.WriteLine($"GET CART Success: {cartItemsResponse.Success}");
+    Console.WriteLine($"GET CART Message: {cartItemsResponse.Message}");
 
-    var updateStatus = await context.CallActivityAsync<string>("UpdateInventory", cartItems);
-    Console.WriteLine($"Updated CartItems: {updateStatus}");
+    if (!cartItemsResponse.Success)
+    {
+      return Response<string>.ErrorResponse(cartItemsResponse.Message);
+    }
+
+    // Place the order
+
+    var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
+
+    Console.WriteLine($"UPDATE INVENTORY Success: {updateInventoryResponse.Success}");
+    Console.WriteLine($"UPDATE INVENTORY Message: {updateInventoryResponse.Message}");
+
+    if (!updateInventoryResponse.Success)
+    {
+      return Response<string>.ErrorResponse(updateInventoryResponse.Message);
+    }
+
+    // Clear the cart
+
+    return Response<string>.SuccessResponse("Order processing completed successfully.");
   }
 }

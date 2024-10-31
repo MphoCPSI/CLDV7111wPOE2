@@ -16,6 +16,15 @@ const addNavigationEffects = () => {
   });
 }
 
+const showToast = (message) => {
+  var toastElement = document.getElementById("snackbarToast");
+  var toastBody = toastElement.querySelector(".toast-body");
+  toastBody.textContent = message;
+
+  var toast = new bootstrap.Toast(toastElement);
+  toast.show();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   addNavigationEffects();
 });

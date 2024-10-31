@@ -2,27 +2,33 @@ using KhumaloCraft.Business.Services;
 using KhumaloCraft.Shared.DTOs;
 using Microsoft.Azure.Functions.Worker;
 
-namespace KhumaloCraft.BusinessFunctions.Activities;
-
-public class GetCartDetailsActivity
+namespace KhumaloCraft.BusinessFunctions.Activities
 {
-  private readonly CartService _cartService;
-
-  public GetCartDetailsActivity(CartService cartService)
+  public class GetCartDetailsActivity
   {
-    _cartService = cartService;
-  }
+    private readonly CartService _cartService;
 
-  [Function("GetCartDetails")]
-  public async Task<CartDTO> Run([ActivityTrigger] string cartId)
-  {
-    var cart = _cartService.GetCartById(cartId);
-
-    if (cart == null)
+    public GetCartDetailsActivity(CartService cartService)
     {
-      return null;
+      _cartService = cartService;
     }
 
-    return await Task.FromResult(cart);
+    [Function("GetCartDetails")]
+    public async Task<Response<CartDTO>> Run([ActivityTrigger] string cartId)
+    {
+      if (string.IsNullOrEmpty(cartId))
+      {
+        return Response<CartDTO>.ErrorResponse("Cart ID cannot be null or empty.");
+      }
+
+      var cart = _cartService.GetCartById(cartId);
+
+      if (cart == null)
+      {
+        return Response<CartDTO>.ErrorResponse("Cart not found or is empty.");
+      }
+
+      return await Task.FromResult(Response<CartDTO>.SuccessResponse(cart));
+    }
   }
 }
