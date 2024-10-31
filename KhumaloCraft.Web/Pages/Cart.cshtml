@@ -66,9 +66,12 @@
       <div class="d-flex justify-content-end mt-4">
         @if (User.Identity.IsAuthenticated)
         {
-          <form method="post" asp-page-handler="CheckoutCart">
+          <form method="post" asp-page-handler="CheckoutCart" onsubmit="toggleSpinner(true)">
             <input type="hidden" name="cartId" value="@Model.Cart.CartId" />
-            <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-2">Place Order</button>
+            <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-2" id="checkoutButton">
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" id="spinner" style="display: none;"></span>
+              Place Order
+            </button>
           </form>
         }
         else
@@ -79,3 +82,23 @@
     }
   </div>
 </div>
+
+<script>
+  function toggleSpinner(isSubmitting) {
+    const button = document.getElementById("checkoutButton");
+    const spinner = document.getElementById("spinner");
+
+    if (isSubmitting) {
+      spinner.style.display = 'inline-block';
+      button.disabled = true;
+    } else {
+      spinner.style.display = 'none';
+      button.disabled = false;
+    }
+  }
+
+  // Reset spinner if a page refresh happens on error or success response
+  window.addEventListener('DOMContentLoaded', () => {
+    toggleSpinner(false);
+  });
+</script>

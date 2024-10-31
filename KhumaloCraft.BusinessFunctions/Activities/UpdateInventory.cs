@@ -18,7 +18,6 @@ namespace KhumaloCraft.BusinessFunctions.Activities
     {
       if (cartDTO == null || cartDTO.Items.Count == 0)
       {
-        Console.WriteLine("No items found in cart for CartId: {0}", cartDTO.CartId);
         return Response<string>.ErrorResponse("Cart not found or empty.");
       }
 
@@ -29,8 +28,7 @@ namespace KhumaloCraft.BusinessFunctions.Activities
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"Error updating inventory: {ex.Message}");
-        return Response<string>.ErrorResponse($"Error updating inventory: {ex.Message}");
+        return Response<string>.ErrorResponse($"{ex.Message}");
       }
     }
   }

@@ -46,10 +46,6 @@ namespace KhumaloCraft.BusinessAPI.Controllers
       {
         var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(cartRequestDTO);
 
-        Console.WriteLine("Response Success: {0}", response.Success);
-        Console.WriteLine("Response Message: {0}", response.Message);
-        Console.WriteLine("Response Data: {0}", response.Data ?? "No Data");
-
         return Accepted(response);
       }
       catch (Exception ex)

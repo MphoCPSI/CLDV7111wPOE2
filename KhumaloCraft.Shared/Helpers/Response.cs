@@ -4,7 +4,7 @@ public class Response<T>
     public string Message { get; set; }
     public T Data { get; set; }
 
-    public static Response<T> SuccessResponse(T data, string message = "Operation successful")
+    public static Response<T> SuccessResponse(T data, string message = "Successful")
     {
         return new Response<T> { Success = true, Message = message, Data = data };
     }
