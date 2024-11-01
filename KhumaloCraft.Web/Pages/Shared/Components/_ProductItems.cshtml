@@ -39,12 +39,19 @@
               <div class="mt-auto">
                 @if (sculpture.Quantity > 0)
                 {
-                  <form method="post" asp-page-handler="AddToCart">
-                    <input type="hidden" name="productId" value="@sculpture.ProductId" />
-                    <input type="hidden" name="productName" value="@sculpture.Name" />
-                    <input type="hidden" name="price" value="@sculpture.Price" />
-                    <button class="btn btn-primary btn-block" type="submit">Add to Cart</button>
-                  </form>
+                  @if (!User.Identity.IsAuthenticated)
+                  {
+                    <a href="@Url.Page("/Auth/Login")" class="btn btn-primary btn-block">Add to Cart</a>
+                  }
+                  else
+                  {
+                    <form method="post" asp-page-handler="AddToCart">
+                      <input type="hidden" name="productId" value="@sculpture.ProductId" />
+                      <input type="hidden" name="productName" value="@sculpture.Name" />
+                      <input type="hidden" name="price" value="@sculpture.Price" />
+                      <button class="btn btn-primary btn-block" type="submit">Add to Cart</button>
+                    </form>
+                  }
                 }
                 else
                 {

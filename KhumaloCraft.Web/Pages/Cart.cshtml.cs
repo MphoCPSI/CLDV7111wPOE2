@@ -102,6 +102,28 @@ namespace KhumaloCraft.Web.Pages
       var jsonPayload = JsonSerializer.Serialize(payload);
       var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
+      string? userId = null;
+      if (User.Identity?.IsAuthenticated == true)
+      {
+        var token = Request.Cookies["AuthToken"];
+        if (!string.IsNullOrEmpty(token))
+        {
+          var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+          var jwtToken = tokenHandler.ReadJwtToken(token);
+          userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        var linkCartData = new CartLinkDTO
+        {
+          cartId = userId,
+          userId = userId
+        };
+
+        var cartLinkData = new StringContent(JsonSerializer.Serialize(linkCartData), Encoding.UTF8, "application/json");
+
+        await _httpClient.PostAsync("api/cart/link", cartLinkData);
+      }
+
       try
       {
         var response = await _httpClient.PostAsync("api/orders/create", content);
@@ -152,6 +174,7 @@ namespace KhumaloCraft.Web.Pages
       }
       catch (Exception ex)
       {
+        Console.WriteLine(ex.ToString());
         await OnGetAsync();
         TempData["ToastMessage"] = "An error occurred. Please try again.";
         return Page();

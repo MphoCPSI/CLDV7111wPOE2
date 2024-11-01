@@ -21,6 +21,7 @@ public class OrderRepository : IOrderRepository
       .ThenInclude(oi => oi.Product)
       .Include(o => o.User)
       .Include(o => o.Status)
+      .OrderByDescending(o => o.OrderDate)
       .ToListAsync();
   }
 
@@ -31,6 +32,7 @@ public class OrderRepository : IOrderRepository
         .ThenInclude(oi => oi.Product)
         .Include(o => o.Status)
         .Where(o => o.UserId == userId)
+        .OrderByDescending(o => o.OrderDate)
         .ToListAsync();
   }
 
