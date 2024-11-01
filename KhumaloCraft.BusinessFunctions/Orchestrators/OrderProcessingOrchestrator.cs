@@ -36,7 +36,8 @@ public static class OrderProcessingOrchestrator
           return Response<string>.ErrorResponse(updateInventoryResponse.Message);
         }
      */
-    // Clear the cart
+
+    context.CallActivityAsync("RemoveCart", cartId);
 
     return Response<OrderResponse>.SuccessResponse(ProcessOrderResponse.Data);
   }
