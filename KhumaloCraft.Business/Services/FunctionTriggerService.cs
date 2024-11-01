@@ -30,6 +30,7 @@ public class FunctionTriggerService : IFunctionTriggerService
 
     try
     {
+      _httpClient.DefaultRequestHeaders.Add("x-functions-key", _configuration["AzureFunctions:XFunctionsKey"]);
       var response = await _httpClient.PostAsync(functionUrl, content);
 
       if (response.IsSuccessStatusCode)

@@ -3,7 +3,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Configuration;
 
 namespace KhumaloCraft.BusinessFunctions.OrderProcessing;
 
@@ -31,8 +31,9 @@ public class OrderProcessingStarter
 
     string instanceId = await client.ScheduleNewOrchestrationInstanceAsync("OrderProcessingOrchestrator", cartRequestDTO.CartId);
 
-    string baseUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") ?? "localhost:7071";
-    string statusQueryGetUri = $"http://{baseUrl}/runtime/webhooks/durabletask/instances/{instanceId}";
+    string baseUrl = Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") ?? "http://localhost:7071";
+    string statusQueryGetUri = $"{baseUrl}/runtime/webhooks/durabletask/instances/{instanceId}";
+
 
     var response = req.CreateResponse(System.Net.HttpStatusCode.Accepted);
     await response.WriteAsJsonAsync(new
