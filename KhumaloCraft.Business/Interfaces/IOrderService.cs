@@ -7,7 +7,7 @@ public interface IOrderService
   Task<List<OrderDisplayDTO>> GetAllOrders();
   Task<OrderDisplayDTO?> GetOrderById(int orderId);
   Task<List<OrderDisplayDTO>> GetOrdersByUserIdAsync(string userId);
-  Task AddOrder(OrderDTO orderDTO);
+  Task<string> AddOrder(OrderDTO orderDTO);
   Task UpdateOrderStatusAsync(int orderId, int statusId);
   Task CancelOrder(int orderId);
 }

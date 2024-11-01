@@ -66,6 +66,13 @@
       <div class="d-flex justify-content-end mt-4">
         @if (User.Identity.IsAuthenticated)
         {
+          <form class="me-2" method="post" asp-page-handler="EmptyCheckoutCart">
+            <input type="hidden" name="cartId" value="@Model.Cart.CartId" />
+            <button type="submit" class="btn btn-secondary btn-lg fw-bold px-5 py-2">
+              Empty Cart
+            </button>
+          </form>
+
           <form method="post" asp-page-handler="CheckoutCart" onsubmit="toggleSpinner(true)">
             <input type="hidden" name="cartId" value="@Model.Cart.CartId" />
             <button type="submit" class="btn btn-success btn-lg fw-bold px-5 py-2" id="checkoutButton">

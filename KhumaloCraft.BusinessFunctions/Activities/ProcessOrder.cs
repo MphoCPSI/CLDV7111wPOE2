@@ -17,11 +17,11 @@ public class ProcessOrderActivity
   }
 
   [Function("ProcessOrder")]
-  public async Task<Response<string>> Run([ActivityTrigger] CartDTO cartDTO)
+  public async Task<Response<OrderResponse>> Run([ActivityTrigger] CartDTO cartDTO)
   {
     if (cartDTO == null || cartDTO.Items.Count == 0)
     {
-      return Response<string>.ErrorResponse("Cart not found or empty.");
+      return Response<OrderResponse>.ErrorResponse("Cart not found or empty.");
     }
 
     try
@@ -30,7 +30,7 @@ public class ProcessOrderActivity
 
       if (string.IsNullOrEmpty(userId))
       {
-        return Response<string>.ErrorResponse("User ID is missing from the cart.");
+        return Response<OrderResponse>.ErrorResponse("User ID is missing from the cart.");
       }
 
       var orderDTO = new OrderDTO
@@ -45,13 +45,17 @@ public class ProcessOrderActivity
         }).ToList()
       };
 
-      await _orderService.AddOrder(orderDTO);
+      var orderId = await _orderService.AddOrder(orderDTO);
 
-      return Response<string>.SuccessResponse("Order processed successfully.");
+      return Response<OrderResponse>.SuccessResponse(new OrderResponse
+      {
+        OrderId = orderId,
+        Message = "Order processed successfully."
+      });
     }
     catch (Exception ex)
     {
-      return Response<string>.ErrorResponse($"{ex.Message}");
+      return Response<OrderResponse>.ErrorResponse($"{ex.Message}");
     }
   }
 }

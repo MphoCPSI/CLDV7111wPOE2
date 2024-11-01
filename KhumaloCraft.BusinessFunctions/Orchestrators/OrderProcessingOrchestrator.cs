@@ -22,7 +22,7 @@ public static class OrderProcessingOrchestrator
       return Response<string>.ErrorResponse(cartItemsResponse.Message);
     }
 
-    var ProcessOrderResponse = await context.CallActivityAsync<Response<string>>("ProcessOrder", cartItemsResponse.Data);
+    var ProcessOrderResponse = await context.CallActivityAsync<Response<OrderResponse>>("ProcessOrder", cartItemsResponse.Data);
 
     Console.WriteLine($"PROCESS ORDER Success: {ProcessOrderResponse.Success}");
     Console.WriteLine($"PROCESS ORDER Message: {ProcessOrderResponse.Message}");
@@ -32,16 +32,16 @@ public static class OrderProcessingOrchestrator
       return Response<string>.ErrorResponse(ProcessOrderResponse.Message);
     }
 
-    var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
+    /*     var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
 
-    Console.WriteLine($"UPDATE INVENTORY Success: {updateInventoryResponse.Success}");
-    Console.WriteLine($"UPDATE INVENTORY Message: {updateInventoryResponse.Message}");
+        Console.WriteLine($"UPDATE INVENTORY Success: {updateInventoryResponse.Success}");
+        Console.WriteLine($"UPDATE INVENTORY Message: {updateInventoryResponse.Message}");
 
-    if (!updateInventoryResponse.Success)
-    {
-      return Response<string>.ErrorResponse(updateInventoryResponse.Message);
-    }
-
+        if (!updateInventoryResponse.Success)
+        {
+          return Response<string>.ErrorResponse(updateInventoryResponse.Message);
+        }
+     */
     // Clear the cart
 
     return Response<string>.SuccessResponse("Order processing completed successfully.");

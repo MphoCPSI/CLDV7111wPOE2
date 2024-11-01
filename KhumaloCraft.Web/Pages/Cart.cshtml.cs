@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using KhumaloCraft.Shared.DTOs;
@@ -21,7 +22,26 @@ namespace KhumaloCraft.Web.Pages
 
     public string GetCartId()
     {
-      return Request.Cookies["CartId"];
+      if (Request.Cookies.ContainsKey("CartId"))
+      {
+        return Request.Cookies["CartId"];
+      }
+
+      string? userId = null;
+      if (User.Identity?.IsAuthenticated == true)
+      {
+        var token = Request.Cookies["AuthToken"];
+        if (!string.IsNullOrEmpty(token))
+        {
+          var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+          var jwtToken = tokenHandler.ReadJwtToken(token);
+          userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+      }
+
+      string cartId = userId ?? Guid.NewGuid().ToString();
+
+      return cartId;
     }
 
     public async Task OnGetAsync()
@@ -48,6 +68,31 @@ namespace KhumaloCraft.Web.Pages
       else
       {
         Cart = new CartDTO();
+      }
+    }
+
+    public async Task<IActionResult> OnPostEmptyCheckoutCartAsync(string cartId)
+    {
+      try
+      {
+        var response = await _httpClient.PostAsJsonAsync($"api/cart/clear", new CartRequestDTO { CartId = cartId });
+
+        if (response.IsSuccessStatusCode)
+        {
+          TempData["ToastMessage"] = "Your cart has been emptied.";
+          return RedirectToPage("/Cart");
+        }
+        else
+        {
+          TempData["ToastMessage"] = "An error occurred while emptying the cart. Please try again.";
+          return Page();
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error clearing the cart for cartId: {CartId}", cartId);
+        TempData["ToastMessage"] = "An unexpected error occurred.";
+        return Page();
       }
     }
 

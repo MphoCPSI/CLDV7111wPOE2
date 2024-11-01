@@ -72,7 +72,7 @@ public class OrderService : IOrderService
     return new OrderDisplayDTO();
   }
 
-  public async Task AddOrder(OrderDTO orderDTO)
+  public async Task<string> AddOrder(OrderDTO orderDTO)
   {
     var order = new Order
     {
@@ -94,6 +94,8 @@ public class OrderService : IOrderService
 
     await _orderRepository.AddOrderAsync(order);
     await _orderRepository.SaveChangesAsync();
+
+    return orderDTO.OrderId;
   }
 
   public async Task UpdateOrderStatusAsync(int orderId, int statusId)

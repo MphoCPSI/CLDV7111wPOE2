@@ -42,9 +42,9 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     }
 
     [HttpPost("clear")]
-    public IActionResult ClearCart(string cartId)
+    public IActionResult ClearCart([FromBody] CartRequestDTO request)
     {
-      _cartService.ClearCart(cartId);
+      _cartService.ClearCart(request.CartId);
       return NoContent();
     }
   }
