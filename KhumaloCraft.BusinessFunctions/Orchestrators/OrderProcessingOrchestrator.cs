@@ -8,28 +8,22 @@ public static class OrderProcessingOrchestrator
 {
 
   [Function("OrderProcessingOrchestrator")]
-  public static async Task<Response<string>> Run([OrchestrationTrigger] TaskOrchestrationContext context)
+  public static async Task<Response<OrderResponse>> Run([OrchestrationTrigger] TaskOrchestrationContext context)
   {
     var cartId = context.GetInput<string>();
 
     var cartItemsResponse = await context.CallActivityAsync<Response<CartDTO>>("GetCartDetails", cartId);
 
-    Console.WriteLine($"GET CART Success: {cartItemsResponse.Success}");
-    Console.WriteLine($"GET CART Message: {cartItemsResponse.Message}");
-
     if (!cartItemsResponse.Success)
     {
-      return Response<string>.ErrorResponse(cartItemsResponse.Message);
+      return Response<OrderResponse>.ErrorResponse(cartItemsResponse.Message);
     }
 
     var ProcessOrderResponse = await context.CallActivityAsync<Response<OrderResponse>>("ProcessOrder", cartItemsResponse.Data);
 
-    Console.WriteLine($"PROCESS ORDER Success: {ProcessOrderResponse.Success}");
-    Console.WriteLine($"PROCESS ORDER Message: {ProcessOrderResponse.Message}");
-
     if (!ProcessOrderResponse.Success)
     {
-      return Response<string>.ErrorResponse(ProcessOrderResponse.Message);
+      return Response<OrderResponse>.ErrorResponse(ProcessOrderResponse.Message);
     }
 
     /*     var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
@@ -44,6 +38,6 @@ public static class OrderProcessingOrchestrator
      */
     // Clear the cart
 
-    return Response<string>.SuccessResponse("Order processing completed successfully.");
+    return Response<OrderResponse>.SuccessResponse(ProcessOrderResponse.Data);
   }
 }

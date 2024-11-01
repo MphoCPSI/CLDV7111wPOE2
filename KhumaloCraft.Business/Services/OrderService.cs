@@ -1,3 +1,4 @@
+using System.Text.Json;
 using KhumaloCraft.Business.Interfaces;
 using KhumaloCraft.Data.Entities;
 using KhumaloCraft.Data.Repositories.Interfaces;
@@ -64,15 +65,28 @@ public class OrderService : IOrderService
     return orderDTOs;
   }
 
-  public async Task<OrderDisplayDTO?> GetOrderById(int orderId)
+  public async Task<OrderDisplayDTO> GetOrderById(int orderId)
   {
     var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
     if (order == null) return null;
 
-    return new OrderDisplayDTO();
+    return new OrderDisplayDTO
+    {
+      OrderId = order.OrderId.ToString(),
+      OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
+      Items = order.OrderItems.Select(item => new OrderItemDTO
+      {
+        ProductName = item.Product.Name,
+        Quantity = item.Quantity,
+        Price = item.Product.Price
+      }).ToList()
+    };
   }
 
-  public async Task<string> AddOrder(OrderDTO orderDTO)
+  public async Task<int> AddOrder(OrderDTO orderDTO)
   {
     var order = new Order
     {
@@ -95,7 +109,7 @@ public class OrderService : IOrderService
     await _orderRepository.AddOrderAsync(order);
     await _orderRepository.SaveChangesAsync();
 
-    return orderDTO.OrderId;
+    return order.OrderId;
   }
 
   public async Task UpdateOrderStatusAsync(int orderId, int statusId)

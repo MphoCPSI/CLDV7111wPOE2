@@ -49,7 +49,7 @@ public class ProcessOrderActivity
 
       return Response<OrderResponse>.SuccessResponse(new OrderResponse
       {
-        OrderId = orderId,
+        OrderId = orderId.ToString(),
         Message = "Order processed successfully."
       });
     }

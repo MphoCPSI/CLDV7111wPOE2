@@ -36,9 +36,13 @@ public class OrderRepository : IOrderRepository
         .ToListAsync();
   }
 
-  public async Task<Order?> GetOrderByIdAsync(int orderId)
+  public async Task<Order> GetOrderByIdAsync(int orderId)
   {
-    return await _dbContext.Orders.FirstOrDefaultAsync(p => p.OrderId == orderId);
+    return await _dbContext.Orders
+        .Include(o => o.OrderItems)
+        .ThenInclude(oi => oi.Product)
+        .Include(o => o.Status)
+        .FirstOrDefaultAsync(o => o.OrderId == orderId);
   }
 
   public async Task AddOrderAsync(Order order)

@@ -18,6 +18,20 @@ namespace KhumaloCraft.BusinessAPI.Controllers
       _functionTriggerService = functionTriggerService;
     }
 
+
+    [HttpGet("{orderId}")]
+    public async Task<IActionResult> GetOrderById(int orderId)
+    {
+      var orders = await _orderService.GetOrderById(orderId);
+
+      if (orders == null)
+      {
+        return NotFound("No orders found for this user.");
+      }
+
+      return Ok(orders);
+    }
+
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetUserOrders(string userId)
     {

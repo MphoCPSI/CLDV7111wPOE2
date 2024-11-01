@@ -156,7 +156,8 @@ namespace KhumaloCraft.Web.Pages
 
               if (pollingResult.Success)
               {
-                TempData["ToastMessage"] = pollingResult.Message;
+                TempData["OrderId"] = pollingResult.Data;
+                TempData["ToastMessage"] = "Order placed successfully";
                 return RedirectToPage("/Checkout");
               }
               else
@@ -193,16 +194,25 @@ namespace KhumaloCraft.Web.Pages
         if (statusResponse.IsSuccessStatusCode)
         {
           var statusContent = await statusResponse.Content.ReadAsStringAsync();
-          Console.WriteLine("statusContent Status Code: " + statusContent);
 
           var orchestrationStatus = JsonSerializer.Deserialize<OrchestrationStatus>(statusContent);
+
           if (orchestrationStatus != null)
           {
             if (orchestrationStatus.RuntimeStatus == "Completed")
             {
               if (orchestrationStatus.Output?.Success == true)
               {
-                return Response<string>.SuccessResponse("Your order has been completed successfully.");
+                var orderId = orchestrationStatus.Output.Data?.OrderId;
+
+                if (!string.IsNullOrEmpty(orderId))
+                {
+                  return Response<string>.SuccessResponse(orderId);
+                }
+                else
+                {
+                  return Response<string>.ErrorResponse("OrderId is missing in the response.");
+                }
               }
               else
               {

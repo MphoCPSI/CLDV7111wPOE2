@@ -18,11 +18,18 @@ public class OrchestrationStatus
   public object CustomStatus { get; set; }
 
   [JsonPropertyName("output")]
-  public Response<string> Output { get; set; }
+  public OrchestrationOutput Output { get; set; }
 
   [JsonPropertyName("createdTime")]
   public DateTime CreatedTime { get; set; }
 
   [JsonPropertyName("lastUpdatedTime")]
   public DateTime LastUpdatedTime { get; set; }
+}
+
+public class OrchestrationOutput
+{
+  public bool Success { get; set; }
+  public string Message { get; set; }
+  public OrderResponse Data { get; set; }
 }
