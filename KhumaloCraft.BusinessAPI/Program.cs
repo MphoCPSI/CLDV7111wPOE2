@@ -62,6 +62,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -70,6 +71,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<IFunctionTriggerService, FunctionTriggerService>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
 
 builder.Services.AddHostedService<CartCleanupService>();
 
