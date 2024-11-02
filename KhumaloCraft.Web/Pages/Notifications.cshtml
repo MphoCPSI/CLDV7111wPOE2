@@ -1,7 +1,7 @@
 ﻿@page
 @model KhumaloCraft.Web.Pages.NotificationsModel
 @{
-  ViewData["Title"] = "Notifications page";
+  ViewData["Title"] = "Notifications";
 }
 
 <div class="container-fluid p-0">
@@ -11,7 +11,8 @@
       <p class="text-center">Review your order status and updates.</p>
 
       <!-- Link to view only unread notifications -->
-      <a asp-page-handler="Unread" class="btn btn-primary mb-3">View Unread Notifications</a>
+      <a asp-page-handler="LoadNotificationsAsync" class="btn btn-primary mb-3">View All Notifications</a>
+      <a asp-page-handler="Unread" class="btn btn-info mb-3">View Unread Notifications</a>
 
       @if (Model.Notifications == null || !Model.Notifications.Any())
       {

@@ -50,6 +50,7 @@ public class ProcessOrderActivity
       return Response<OrderResponse>.SuccessResponse(new OrderResponse
       {
         OrderId = orderId.ToString(),
+        UserId = userId,
         Message = "Order processed successfully."
       });
     }

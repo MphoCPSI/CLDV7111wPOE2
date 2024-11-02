@@ -1,3 +1,4 @@
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 
@@ -8,6 +9,7 @@ public static class NotificationsOrchestrator
   [Function("NotificationsOrchestrator")]
   public static async Task Run([OrchestrationTrigger] TaskOrchestrationContext context)
   {
-    await context.CallActivityAsync<string>("SendInventoryUpdateNotification", "Sending Notification");
+    var request = context.GetInput<NotificationRequest>();
+    await context.CallActivityAsync<string>("SendStatusNotification", request);
   }
 }

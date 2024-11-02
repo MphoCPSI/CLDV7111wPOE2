@@ -1,4 +1,5 @@
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 
@@ -19,6 +20,8 @@ public static class OrderProcessingOrchestrator
       return Response<OrderResponse>.ErrorResponse(cartItemsResponse.Message);
     }
 
+    await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
+
     var ProcessOrderResponse = await context.CallActivityAsync<Response<OrderResponse>>("ProcessOrder", cartItemsResponse.Data);
 
     if (!ProcessOrderResponse.Success)
@@ -26,19 +29,14 @@ public static class OrderProcessingOrchestrator
       return Response<OrderResponse>.ErrorResponse(ProcessOrderResponse.Message);
     }
 
-    /*     var updateInventoryResponse = await context.CallActivityAsync<Response<string>>("UpdateInventory", cartItemsResponse.Data);
+    await context.CallActivityAsync("SendOrderStatusNotification", new NotificationRequest
+    {
+      Status = "Pending",
+      UserId = ProcessOrderResponse.Data.UserId,
+      OrderId = ProcessOrderResponse.Data.OrderId
+    });
 
-        Console.WriteLine($"UPDATE INVENTORY Success: {updateInventoryResponse.Success}");
-        Console.WriteLine($"UPDATE INVENTORY Message: {updateInventoryResponse.Message}");
-
-        if (!updateInventoryResponse.Success)
-        {
-          return Response<string>.ErrorResponse(updateInventoryResponse.Message);
-        }
-     */
-
-    context.CallActivityAsync("RemoveCart", cartId);
-    context.CallActivityAsync("SendOrderStatus", cartId);
+    await context.CallActivityAsync("RemoveCart", cartId);
 
     return Response<OrderResponse>.SuccessResponse(ProcessOrderResponse.Data);
   }

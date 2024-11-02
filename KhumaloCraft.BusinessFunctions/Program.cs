@@ -27,11 +27,13 @@ var host = new HostBuilder()
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IStatusRepository, StatusRepository>();
+        services.AddScoped<INotificationsRepository, NotificationsRepository>();
 
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IStatusService, StatusService>();
+        services.AddScoped<INotificationsService, NotificationsService>();
         services.AddScoped<CartService>();
     })
     .Build();
