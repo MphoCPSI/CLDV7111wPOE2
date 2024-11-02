@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using KhumaloCraft.Business.Interfaces;
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.Extensions.Configuration;
 
 namespace KhumaloCraft.Business.Services;
@@ -20,6 +21,12 @@ public class FunctionTriggerService : IFunctionTriggerService
   public async Task<Response<string>> StartOrderProcessingOrchestratorAsync(CartRequestDTO requestDTO)
   {
     var functionUrl = _configuration["AzureFunctions:OrderProcessingOrchestratorUrl"];
+    return await TriggerFunctionAsync(functionUrl, requestDTO);
+  }
+
+  public async Task<Response<string>> StartNotificationsOrchestratorAsync(NotificationRequest requestDTO)
+  {
+    var functionUrl = _configuration["AzureFunctions:NotificationsOrchestratorUrl"];
     return await TriggerFunctionAsync(functionUrl, requestDTO);
   }
 

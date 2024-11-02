@@ -8,6 +8,6 @@ public interface IOrderService
   Task<OrderDisplayDTO> GetOrderById(int orderId);
   Task<List<OrderDisplayDTO>> GetOrdersByUserIdAsync(string userId);
   Task<int> AddOrder(OrderDTO orderDTO);
-  Task UpdateOrderStatusAsync(int orderId, int statusId);
+  Task<OrderDisplayDTO> UpdateOrderStatusAsync(int orderId, int statusId);
   Task CancelOrder(int orderId);
 }

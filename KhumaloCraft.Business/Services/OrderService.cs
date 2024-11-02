@@ -112,18 +112,24 @@ public class OrderService : IOrderService
     return order.OrderId;
   }
 
-  public async Task UpdateOrderStatusAsync(int orderId, int statusId)
+  public async Task<OrderDisplayDTO> UpdateOrderStatusAsync(int orderId, int statusId)
   {
-    var order = await _orderRepository.GetOrderByIdAsync(orderId);
+    var order = await _orderRepository.UpdateOrderStatusAsync(orderId, statusId);
 
-    if (order == null)
+    return new OrderDisplayDTO
     {
-      throw new Exception("Order not found.");
-    }
-
-    order.StatusId = statusId;
-
-    await _orderRepository.SaveChangesAsync();
+      OrderId = order.OrderId.ToString(),
+      UserId = order.UserId,
+      OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
+      Items = order.OrderItems.Select(item => new OrderItemDTO
+      {
+        ProductName = item.Product.Name,
+        Quantity = item.Quantity,
+        Price = item.Product.Price
+      }).ToList()
+    };
   }
 
   public async Task CancelOrder(int orderId)

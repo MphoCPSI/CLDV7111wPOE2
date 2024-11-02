@@ -1,5 +1,6 @@
 using KhumaloCraft.Business.Interfaces;
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,7 +73,15 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateStatus(int orderId, [FromBody] StatusDTO statusDTO)
     {
-      await _orderService.UpdateOrderStatusAsync(orderId, statusDTO.StatusId);
+      var order = await _orderService.UpdateOrderStatusAsync(orderId, statusDTO.StatusId);
+
+      await _functionTriggerService.StartNotificationsOrchestratorAsync(new NotificationRequest
+      {
+        Status = order.StatusName,
+        UserId = order.UserId,
+        OrderId = orderId.ToString(),
+      });
+
       return Ok($"Order status updated successfully.");
     }
   }

@@ -10,6 +10,6 @@ public static class NotificationsOrchestrator
   public static async Task Run([OrchestrationTrigger] TaskOrchestrationContext context)
   {
     var request = context.GetInput<NotificationRequest>();
-    await context.CallActivityAsync<string>("SendStatusNotification", request);
+    await context.CallActivityAsync<string>("SendOrderStatusNotification", request);
   }
 }

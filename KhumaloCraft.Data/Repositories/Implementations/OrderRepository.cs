@@ -55,9 +55,9 @@ public class OrderRepository : IOrderRepository
     _dbContext.Orders.Remove(order);
   }
 
-  public async Task UpdateOrderStatusAsync(int orderId, int statusId)
+  public async Task<Order> UpdateOrderStatusAsync(int orderId, int statusId)
   {
-    var order = await _dbContext.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId);
+    var order = await _dbContext.Orders.Include(o => o.Status).FirstOrDefaultAsync(o => o.OrderId == orderId);
 
     if (order == null)
     {
@@ -74,6 +74,10 @@ public class OrderRepository : IOrderRepository
     order.StatusId = statusId;
 
     await SaveChangesAsync();
+
+    await _dbContext.Entry(order).Reference(o => o.Status).LoadAsync();
+
+    return order;
   }
 
   public async Task SaveChangesAsync()
