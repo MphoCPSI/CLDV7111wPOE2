@@ -2,11 +2,11 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace KhumaloCraft.BusinessFunctions.Activities;
 
-public class SendOrderConfirmationActivity
+public class SendOrderStatusActivity
 {
-  [Function("SendOrderConfirmation")]
-  public static Task<string> Run([ActivityTrigger] string name)
+  [Function("SendOrderStatus")]
+  public static Task<string> Run([ActivityTrigger] string cartId)
   {
-    return Task.FromResult($"Hello {name}!");
+    return Task.FromResult($"Hello {cartId}!");
   }
 }

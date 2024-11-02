@@ -38,6 +38,7 @@ public static class OrderProcessingOrchestrator
      */
 
     context.CallActivityAsync("RemoveCart", cartId);
+    context.CallActivityAsync("SendOrderStatus", cartId);
 
     return Response<OrderResponse>.SuccessResponse(ProcessOrderResponse.Data);
   }
