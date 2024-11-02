@@ -15,6 +15,8 @@ var host = new HostBuilder()
     {
         var dbConnection = context.Configuration.GetConnectionString("DefaultConnection");
 
+        services.AddHttpClient();
+
         services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(dbConnection));
 

@@ -1,7 +1,9 @@
 using KhumaloCraft.Business.Interfaces;
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace KhumaloCraft.BusinessAPI.Controllers
 {
@@ -10,10 +12,13 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly INotificationsService _notificationsService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public NotificationsController(INotificationsService notificationsService)
+
+        public NotificationsController(INotificationsService notificationsService, IHubContext<NotificationHub> hubContext)
         {
             _notificationsService = notificationsService;
+            _hubContext = hubContext;
         }
 
         // 1. Add a new notification
@@ -46,6 +51,22 @@ namespace KhumaloCraft.BusinessAPI.Controllers
         {
             await _notificationsService.MarkNotificationAsReadAsync(notificationId);
             return Ok(new { Message = "Notification marked as read" });
+        }
+
+        [HttpPost("notification-order-status")]
+        public async Task<IActionResult> SendOrderStatusNotification([FromBody] NotificationRequest message)
+        {
+            Console.WriteLine("I RAN");
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+            return Ok("Notification sent to all clients.");
+        }
+
+        [HttpPost("notification-product-update")]
+        public async Task<IActionResult> SendProductNotification([FromBody] ProductNotificationsRequest message)
+        {
+            Console.WriteLine("I RAN");
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+            return Ok("Notification sent to all clients.");
         }
     }
 }

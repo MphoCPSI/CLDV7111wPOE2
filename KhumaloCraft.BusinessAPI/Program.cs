@@ -9,10 +9,14 @@ using KhumaloCraft.Data.Data;
 using KhumaloCraft.Data.Entities;
 using KhumaloCraft.Data.Repositories.Implementations;
 using KhumaloCraft.Data.Repositories.Interfaces;
+using KhumaloCraft.BusinessAPI;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 var dbConnection = Environment.GetEnvironmentVariable("AZURE_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddSignalR();
 
 // Register HttpClient for IHttpClientFactory
 builder.Services.AddHttpClient();
@@ -98,5 +102,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<NotificationHub>("/notificationHub");
 app.Run();

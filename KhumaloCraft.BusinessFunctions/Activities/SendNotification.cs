@@ -2,6 +2,8 @@ using KhumaloCraft.Business.Interfaces;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using KhumaloCraft.Shared.Helpers;
+using System.Text.Json;
+using System.Text;
 
 namespace KhumaloCraft.BusinessFunctions.Notifications
 {
@@ -9,11 +11,14 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
   {
     private readonly INotificationsService _notificationsService;
     private readonly ILogger<SendNotificationActivity> _logger;
+    private readonly HttpClient _httpClient;
 
-    public SendNotificationActivity(INotificationsService notificationsService, ILogger<SendNotificationActivity> logger)
+    public SendNotificationActivity(INotificationsService notificationsService, ILogger<SendNotificationActivity> logger, IHttpClientFactory httpClientFactory)
     {
       _notificationsService = notificationsService;
       _logger = logger;
+      _httpClient = httpClientFactory.CreateClient();
+
     }
 
     [Function("SendOrderStatusNotification")]
@@ -23,6 +28,21 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
 
       // Use the service to add the notification
       await _notificationsService.AddNotificationAsync(request.UserId, $"Status for order: {request.OrderId} changed to {request.Status}");
+
+      var jsonPayload = JsonSerializer.Serialize(request);
+      var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+      var apiUrl = "http://localhost:5068/api/notifications/notification-order-status";
+
+      try
+      {
+        var response = await _httpClient.PostAsync(apiUrl, content);
+        response.EnsureSuccessStatusCode();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error sending notification: {ex.Message}");
+      }
     }
 
     [Function("SendProductStatusNotification")]
@@ -30,6 +50,21 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
     {
       // Use the service to add the notification
       await _notificationsService.AddNotificationToAllUsersAsync($"{request.ProductName} - {request.Message}");
+
+      var jsonPayload = JsonSerializer.Serialize(request);
+      var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+      var apiUrl = "http://localhost:5068/api/notifications/notification-product-update";
+
+      try
+      {
+        var response = await _httpClient.PostAsync(apiUrl, content);
+        response.EnsureSuccessStatusCode();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error sending notification: {ex.Message}");
+      }
     }
   }
 }
