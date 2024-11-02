@@ -63,6 +63,20 @@
             <span asp-validation-for="Product.CategoryId" class="text-danger small"></span>
           </div>
 
+          <!-- Message Area -->
+          <div class="form-group mb-4">
+            <label asp-for="Product.Message" class="form-label fw-semibold">Notification Message</label>
+            <textarea asp-for="Product.Message" class="form-control border-0 border-bottom" placeholder="Enter notification message"></textarea>
+            <span asp-validation-for="Product.Message" class="text-danger small"></span>
+          </div>
+
+          <!-- Send Message Checkbox -->
+          <div class="form-check mb-4">
+            <input asp-for="Product.SendMessage" class="form-check-input" type="checkbox" />
+            <label asp-for="Product.SendMessage" class="form-check-label fw-semibold">Send Notification to Users</label>
+            <span asp-validation-for="Product.SendMessage" class="text-danger small"></span>
+          </div>
+
           <!-- Form Buttons -->
           <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-dark px-4 py-2">Save</button>

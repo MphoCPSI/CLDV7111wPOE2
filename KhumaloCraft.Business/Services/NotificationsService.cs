@@ -8,10 +8,12 @@ namespace KhumaloCraft.Business.Services;
 public class NotificationsService : INotificationsService
 {
   private readonly INotificationsRepository _notificationsRepo;
+  private readonly IUserRepository _userRepository;
 
-  public NotificationsService(INotificationsRepository notificationsRepo)
+  public NotificationsService(INotificationsRepository notificationsRepo, IUserRepository userRepo)
   {
     _notificationsRepo = notificationsRepo;
+    _userRepository = userRepo;
   }
 
   public async Task AddNotificationAsync(string userId, string message)
@@ -25,6 +27,16 @@ public class NotificationsService : INotificationsService
     };
 
     await _notificationsRepo.AddNotificationAsync(notification);
+  }
+
+  public async Task AddNotificationToAllUsersAsync(string message)
+  {
+    List<string> allUserIds = await _userRepository.GetAllUsersIdsAsync();
+
+    var tasks = allUserIds.Select(userId => AddNotificationAsync(userId, message)).ToList();
+
+    await Task.WhenAll(tasks);
+
   }
 
   public async Task<IEnumerable<NotificationDTO>> GetNotificationsForUserAsync(string userId)

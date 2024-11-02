@@ -26,12 +26,10 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
     }
 
     [Function("SendProductStatusNotification")]
-    public async Task RunSendProductNofication([ActivityTrigger] NotificationRequest request)
+    public async Task RunSendProductNotification([ActivityTrigger] ProductNotificationsRequest request)
     {
-      _logger.LogInformation($"Storing notification for user {request.UserId} with status {request.Status}");
-
       // Use the service to add the notification
-      await _notificationsService.AddNotificationAsync(request.UserId, $"Status for order: {request.OrderId} changed to {request.Status}");
+      await _notificationsService.AddNotificationToAllUsersAsync($"{request.ProductName} - {request.Message}");
     }
   }
 }

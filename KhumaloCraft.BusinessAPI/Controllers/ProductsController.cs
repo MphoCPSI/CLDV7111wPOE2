@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using KhumaloCraft.Shared.DTOs;
 using KhumaloCraft.Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using KhumaloCraft.Shared.Helpers;
 
 namespace KhumaloCraft.BusinessAPI.Controllers
 {
@@ -11,10 +12,12 @@ namespace KhumaloCraft.BusinessAPI.Controllers
   public class ProductsController : ControllerBase
   {
     private readonly IProductService _productService;
+    private readonly IFunctionTriggerService _functionTriggerService;
 
-    public ProductsController(IProductService productService)
+    public ProductsController(IProductService productService, IFunctionTriggerService functionTriggerService)
     {
       _productService = productService;
+      _functionTriggerService = functionTriggerService;
     }
 
     [HttpGet]
@@ -71,6 +74,12 @@ namespace KhumaloCraft.BusinessAPI.Controllers
       if (id != productDTO.ProductId) return BadRequest("Product ID mismatch");
 
       await _productService.UpdateProduct(productDTO);
+
+      await _functionTriggerService.StartProductNotificationsOrchestratorAsync(new ProductNotificationsRequest
+      {
+        ProductName = productDTO.Name,
+        Message = productDTO.Message
+      });
       return Ok("Product updated successfully");
     }
 

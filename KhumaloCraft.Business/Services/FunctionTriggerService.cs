@@ -30,6 +30,12 @@ public class FunctionTriggerService : IFunctionTriggerService
     return await TriggerFunctionAsync(functionUrl, requestDTO);
   }
 
+  public async Task<Response<string>> StartProductNotificationsOrchestratorAsync(ProductNotificationsRequest requestDTO)
+  {
+    var functionUrl = _configuration["AzureFunctions:ProductNotificationsOrchestratorUrl"];
+    return await TriggerFunctionAsync(functionUrl, requestDTO);
+  }
+
   private async Task<Response<string>> TriggerFunctionAsync(string functionUrl, object payload)
   {
     var jsonPayload = JsonSerializer.Serialize(payload);

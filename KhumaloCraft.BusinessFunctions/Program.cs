@@ -28,6 +28,7 @@ var host = new HostBuilder()
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IStatusRepository, StatusRepository>();
         services.AddScoped<INotificationsRepository, NotificationsRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
