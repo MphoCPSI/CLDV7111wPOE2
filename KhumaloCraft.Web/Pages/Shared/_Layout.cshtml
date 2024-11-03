@@ -41,6 +41,7 @@ new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
 
   @await Html.PartialAsync("_Footer.cshtml", menuItems)
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
   <script src="~/lib/jquery/dist/jquery.min.js"></script>
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
@@ -50,9 +51,10 @@ new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
   <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 2000">
     <div id="snackbarToast" class="toast bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
       <div class="toast-header">
-        <strong class="me-auto">Notification</strong>
+        <strong class="me-auto">New Notification!</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
+
       <div class="toast-body fw-bold">
         <!-- Message will be injected here -->
       </div>
@@ -65,6 +67,25 @@ new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
       showToast("@TempData["ToastMessage"]");
     </script>
   }
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const signalRHubUrl = "@ViewData["SignalRHubUrl"]";
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl(signalRHubUrl)
+        .build();
+
+      connection.on("ReceiveNotification", function (message) {
+        console.log("Notification received:", message);
+        // Display the notification in a toast or alert
+        showToast(`Order ID ${message.orderId}: ${message.status}`);
+      });
+
+      connection.start()
+        .then(() => console.log("Connected to SignalR"))
+        .catch(err => console.error("Error connecting to SignalR:", err));
+    });
+  </script>
 </body>
 
 </html>

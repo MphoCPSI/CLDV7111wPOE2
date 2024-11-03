@@ -95,12 +95,14 @@
     const button = document.getElementById("checkoutButton");
     const spinner = document.getElementById("spinner");
 
-    if (isSubmitting) {
-      spinner.style.display = 'inline-block';
-      button.disabled = true;
-    } else {
-      spinner.style.display = 'none';
-      button.disabled = false;
+    if (spinner) {
+      if (isSubmitting) {
+        spinner.style.display = 'inline-block';
+        button.disabled = true;
+      } else {
+        spinner.style.display = 'none';
+        button.disabled = false;
+      }
     }
   }
 

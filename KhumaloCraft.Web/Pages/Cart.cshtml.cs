@@ -157,7 +157,6 @@ namespace KhumaloCraft.Web.Pages
               if (pollingResult.Success)
               {
                 TempData["OrderId"] = pollingResult.Data;
-                TempData["ToastMessage"] = "Order placed successfully";
                 return RedirectToPage("/Checkout");
               }
               else

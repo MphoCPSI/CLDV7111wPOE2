@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using KhumaloCraft.Shared.Helpers;
 using System.Text.Json;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace KhumaloCraft.BusinessFunctions.Notifications
 {
@@ -12,12 +13,14 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
     private readonly INotificationsService _notificationsService;
     private readonly ILogger<SendNotificationActivity> _logger;
     private readonly HttpClient _httpClient;
+    private readonly string? _businessApiUrl;
 
-    public SendNotificationActivity(INotificationsService notificationsService, ILogger<SendNotificationActivity> logger, IHttpClientFactory httpClientFactory)
+    public SendNotificationActivity(INotificationsService notificationsService, ILogger<SendNotificationActivity> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration)
     {
       _notificationsService = notificationsService;
       _logger = logger;
       _httpClient = httpClientFactory.CreateClient();
+      _businessApiUrl = configuration["ConnectionStrings:BusinessAPI"];
 
     }
 
@@ -30,9 +33,10 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
       await _notificationsService.AddNotificationAsync(request.UserId, $"Status for order: {request.OrderId} changed to {request.Status}");
 
       var jsonPayload = JsonSerializer.Serialize(request);
+      _logger.LogInformation($"Serialized JSON Payload: {jsonPayload}");
       var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-      var apiUrl = "http://localhost:5068/api/notifications/notification-order-status";
+      var apiUrl = $"{_businessApiUrl}/api/notifications/notification-order-status";
 
       try
       {
@@ -54,7 +58,7 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
       var jsonPayload = JsonSerializer.Serialize(request);
       var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-      var apiUrl = "http://localhost:5068/api/notifications/notification-product-update";
+      var apiUrl = $"{_businessApiUrl}/api/notifications/notification-product-update";
 
       try
       {

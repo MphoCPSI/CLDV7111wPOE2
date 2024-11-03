@@ -18,6 +18,17 @@ var dbConnection = Environment.GetEnvironmentVariable("AZURE_CONNECTION_STRING")
 
 builder.Services.AddSignalR();
 
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("AllowAll", policy =>
+  {
+    policy.AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials();
+  });
+});
+
 // Register HttpClient for IHttpClientFactory
 builder.Services.AddHttpClient();
 
@@ -47,6 +58,23 @@ builder.Services.AddAuthentication(options =>
     ValidIssuer = builder.Configuration["Jwt:Issuer"],
     ValidAudience = builder.Configuration["Jwt:Audience"],
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+  };
+
+  options.Events = new JwtBearerEvents
+  {
+    OnMessageReceived = context =>
+    {
+      var accessToken = context.Request.Query["access_token"];
+      var path = context.HttpContext.Request.Path;
+
+      // Check if the request is for SignalR hub
+      if (!string.IsNullOrEmpty(accessToken) &&
+                  path.StartsWithSegments("/notificationHub"))
+      {
+        context.Token = accessToken;
+      }
+      return Task.CompletedTask;
+    }
   };
 });
 
@@ -98,9 +126,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseMiddleware<TokenMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/notificationHub");
+app.UseCors("AllowAll");
+
 app.Run();

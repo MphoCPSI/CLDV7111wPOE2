@@ -56,15 +56,18 @@ namespace KhumaloCraft.BusinessAPI.Controllers
         [HttpPost("notification-order-status")]
         public async Task<IActionResult> SendOrderStatusNotification([FromBody] NotificationRequest message)
         {
-            Console.WriteLine("I RAN");
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
-            return Ok("Notification sent to all clients.");
+            if (!string.IsNullOrEmpty(message.UserId))
+            {
+                await _hubContext.Clients.Group(message.UserId).SendAsync("ReceiveNotification", message);
+                return Ok("Notification sent to specific user.");
+            }
+
+            return BadRequest("User not found for the specified order.");
         }
 
         [HttpPost("notification-product-update")]
         public async Task<IActionResult> SendProductNotification([FromBody] ProductNotificationsRequest message)
         {
-            Console.WriteLine("I RAN");
             await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
             return Ok("Notification sent to all clients.");
         }

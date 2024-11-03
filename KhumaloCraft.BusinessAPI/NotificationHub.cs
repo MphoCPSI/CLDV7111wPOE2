@@ -4,8 +4,13 @@ namespace KhumaloCraft.BusinessAPI;
 
 public class NotificationHub : Hub
 {
-  public async Task SendNotification(string message)
+  public override async Task OnConnectedAsync()
   {
-    await Clients.All.SendAsync("ReceiveNotification", message);
+    var userId = Context.UserIdentifier;
+    if (!string.IsNullOrEmpty(userId))
+    {
+      await Groups.AddToGroupAsync(Context.ConnectionId, userId);
+    }
+    await base.OnConnectedAsync();
   }
 }

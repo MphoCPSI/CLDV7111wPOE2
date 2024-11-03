@@ -29,43 +29,47 @@ namespace KhumaloCraft.Web.Pages.Admin.Orders
       await LoadStatusAsync();
     }
 
-    public async Task<IActionResult> OnPostUpdateStatusAsync(int orderId, int statusId)
+    public async Task<IActionResult> OnPostUpdateStatusAsync()
     {
-      _logger.LogInformation($"Attempting to update order ID {orderId} with new status ID {statusId}");
+      var requestBody = await new StreamReader(Request.Body).ReadToEndAsync();
 
-      if (!ModelState.IsValid)
+      try
       {
-        _logger.LogWarning("Model state is invalid.");
-        foreach (var modelState in ModelState)
+        var payload = JsonSerializer.Deserialize<Dictionary<string, int>>(requestBody);
+        if (payload != null && payload.TryGetValue("orderId", out var orderId) && payload.TryGetValue("statusId", out var statusId))
         {
-          foreach (var error in modelState.Value.Errors)
+          _logger.LogInformation($"Attempting to update order ID {orderId} with new status ID {statusId}");
+
+          var statusDTO = new StatusDTO { StatusId = statusId };
+          var jsonStatus = JsonSerializer.Serialize(statusDTO);
+          var content = new StringContent(jsonStatus, Encoding.UTF8, "application/json");
+
+          var response = await _httpClient.PutAsync($"/api/orders/{orderId}/status", content);
+
+          if (response.IsSuccessStatusCode)
           {
-            _logger.LogError($"Model Error in {modelState.Key}: {error.ErrorMessage}");
+            _logger.LogInformation($"Successfully updated order ID {orderId} with status ID {statusId}");
+            return new ContentResult { Content = "Status updated successfully", StatusCode = 200 };
+          }
+          else
+          {
+            _logger.LogError($"Failed to update order ID {orderId}. Response status: {response.StatusCode}");
+            return new BadRequestObjectResult("Error updating status.");
           }
         }
-        await LoadOrdersAsync();
-        await LoadStatusAsync();
-        return Page();
+        else
+        {
+          _logger.LogError("Invalid payload structure.");
+          return BadRequest("Invalid request structure.");
+        }
       }
-
-      var statusDTO = new StatusDTO { StatusId = statusId };
-      var jsonStatus = JsonSerializer.Serialize(statusDTO);
-      var content = new StringContent(jsonStatus, Encoding.UTF8, "application/json");
-
-      var response = await _httpClient.PutAsync($"/api/orders/{orderId}/status", content);
-
-      if (response.IsSuccessStatusCode)
+      catch (JsonException ex)
       {
-        _logger.LogInformation($"Successfully updated order ID {orderId} with status ID {statusId}");
-        return RedirectToPage("/Admin/Orders/Index");
+        _logger.LogError("Failed to parse JSON: " + ex.Message);
+        return BadRequest("Invalid JSON format.");
       }
-
-      _logger.LogError($"Failed to update order ID {orderId}. Response status: {response.StatusCode}");
-      ModelState.AddModelError(string.Empty, "Error updating status.");
-      await LoadOrdersAsync();
-      await LoadStatusAsync();
-      return Page();
     }
+
 
     private async Task LoadOrdersAsync()
     {

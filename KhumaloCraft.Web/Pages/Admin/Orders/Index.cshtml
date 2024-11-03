@@ -120,8 +120,24 @@
 </div>
 
 <script>
-  function submitForm(orderId) {
-    var form = document.getElementById('statusForm-' + orderId);
-    form.submit();  // Automatically submit the form when the select option changes
+  async function submitForm(orderId) {
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const statusId = document.querySelector(`#statusForm-${orderId} select[name="statusId"]`).value;
+
+    // Prepare the payload
+    const payload = { orderId: parseInt(orderId), statusId: parseInt(statusId) };
+
+    try {
+      const response = await fetch(`/Admin/Orders/Index?handler=UpdateStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "RequestVerificationToken": token
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (error) {
+      console.error("Error in updating status:", error);
+    }
   }
 </script>
