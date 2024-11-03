@@ -58,7 +58,12 @@ namespace KhumaloCraft.BusinessAPI.Controllers
         {
             if (!string.IsNullOrEmpty(message.UserId))
             {
-                await _hubContext.Clients.Group(message.UserId).SendAsync("ReceiveNotification", message);
+                // Format the message to be sent
+                var formattedMessage = $"Order: {message.OrderId} updated to {message.Status}";
+
+                // Send the formatted message to the specific user group
+                await _hubContext.Clients.Group(message.UserId).SendAsync("ReceiveNotification", formattedMessage);
+
                 return Ok("Notification sent to specific user.");
             }
 
@@ -68,7 +73,12 @@ namespace KhumaloCraft.BusinessAPI.Controllers
         [HttpPost("notification-product-update")]
         public async Task<IActionResult> SendProductNotification([FromBody] ProductNotificationsRequest message)
         {
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", message);
+            // Format the message to be sent
+            var formattedMessage = $"{message.ProductName} - {message.Message}";
+
+            // Send the formatted message to all connected clients
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", formattedMessage);
+
             return Ok("Notification sent to all clients.");
         }
     }

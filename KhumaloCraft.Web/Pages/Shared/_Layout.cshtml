@@ -76,9 +76,8 @@ new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
         .build();
 
       connection.on("ReceiveNotification", function (message) {
-        console.log("Notification received:", message);
-        // Display the notification in a toast or alert
-        showToast(`Order ID ${message.orderId}: ${message.status}`);
+        console.log(message);
+        showToast(message);
       });
 
       connection.start()

@@ -52,7 +52,6 @@ namespace KhumaloCraft.BusinessFunctions.Notifications
     [Function("SendProductStatusNotification")]
     public async Task RunSendProductNotification([ActivityTrigger] ProductNotificationsRequest request)
     {
-      // Use the service to add the notification
       await _notificationsService.AddNotificationToAllUsersAsync($"{request.ProductName} - {request.Message}");
 
       var jsonPayload = JsonSerializer.Serialize(request);

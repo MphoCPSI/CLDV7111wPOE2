@@ -75,11 +75,15 @@ namespace KhumaloCraft.BusinessAPI.Controllers
 
       await _productService.UpdateProduct(productDTO);
 
-      await _functionTriggerService.StartProductNotificationsOrchestratorAsync(new ProductNotificationsRequest
+      if (productDTO.SendMessage)
       {
-        ProductName = productDTO.Name,
-        Message = productDTO.Message
-      });
+        await _functionTriggerService.StartProductNotificationsOrchestratorAsync(new ProductNotificationsRequest
+        {
+          ProductName = productDTO.Name,
+          Message = productDTO.Message
+        });
+      }
+
       return Ok("Product updated successfully");
     }
 

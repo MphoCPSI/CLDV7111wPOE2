@@ -25,21 +25,6 @@ const showToast = (message) => {
   toast.show();
 }
 
-/* const initSignalRConnection = () => {
-  const connection = new signalR.HubConnectionBuilder()
-    .withUrl("http://localhost:5068/notificationHub")
-    .build();
-
-  connection.on("ReceiveNotification", function (message) {
-    const formatMessage = `Order: ${message.orderId} updated to ${message.status}`;
-    showToast(formatMessage);
-  });
-
-  connection.start()
-    .catch(err => console.error("Error connecting to SignalR:", err));
-} */
-
 document.addEventListener("DOMContentLoaded", function () {
   addNavigationEffects();
-  // initSignalRConnection();
 });
