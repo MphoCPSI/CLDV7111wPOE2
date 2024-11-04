@@ -13,3 +13,18 @@ E:\!University\Rosebank College\2025\Semester 2\CLDV7111\POE\KhumaloCraftProject
 E:\!University\Rosebank College\2025\Semester 2\CLDV7111\POE\KhumaloCraftProject\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.pdb
 E:\!University\Rosebank College\2025\Semester 2\CLDV7111\POE\KhumaloCraftProject\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.genruntimeconfig.cache
 E:\!University\Rosebank College\2025\Semester 2\CLDV7111\POE\KhumaloCraftProject\KhumaloCraft.Data\obj\Debug\net8.0\ref\KhumaloCraft.Data.dll
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\bin\Debug\net8.0\KhumaloCraft.Data.deps.json
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\bin\Debug\net8.0\KhumaloCraft.Data.runtimeconfig.json
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\bin\Debug\net8.0\KhumaloCraft.Data.dll
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\bin\Debug\net8.0\KhumaloCraft.Data.pdb
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.csproj.AssemblyReference.cache
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.AssemblyInfoInputs.cache
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.AssemblyInfo.cs
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.csproj.CoreCompileInputs.cache
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.sourcelink.json
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.dll
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\refint\KhumaloCraft.Data.dll
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.pdb
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\KhumaloCraft.Data.genruntimeconfig.cache
+C:\Users\RC_Student_lab\Source\Repos\CLDV7111wPOE2\KhumaloCraft.Data\obj\Debug\net8.0\ref\KhumaloCraft.Data.dll
