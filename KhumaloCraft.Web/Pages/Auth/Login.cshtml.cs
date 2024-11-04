@@ -72,27 +72,22 @@ namespace KhumaloCraft.Pages.Auth
         var jwtToken = tokenHandler.ReadJwtToken(tokenResponse.Token);
         var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        if (Request.Cookies.ContainsKey("CartId") || string.IsNullOrEmpty(userId))
+        Response.Cookies.Append("CartId", userId, new CookieOptions
         {
-          var cartId = Request.Cookies["CartId"];
+          Expires = DateTimeOffset.UtcNow.AddDays(30),
+          HttpOnly = true,
+          IsEssential = true
+        });
 
-          Response.Cookies.Append("CartId", userId, new CookieOptions
-          {
-            Expires = DateTimeOffset.UtcNow.AddDays(30),
-            HttpOnly = true,
-            IsEssential = true
-          });
+        var linkCartData = new CartLinkDTO
+        {
+          cartId = userId,
+          userId = userId
+        };
 
-          var linkCartData = new CartLinkDTO
-          {
-            cartId = cartId,
-            userId = userId
-          };
+        var cartLinkData = new StringContent(JsonSerializer.Serialize(linkCartData), Encoding.UTF8, "application/json");
 
-          var cartLinkData = new StringContent(JsonSerializer.Serialize(linkCartData), Encoding.UTF8, "application/json");
-
-          await _httpClient.PostAsync("api/cart/link", cartLinkData);
-        }
+        await _httpClient.PostAsync("api/cart/link", cartLinkData);
         // Redirect to a protected page or homepage after login
         return RedirectToPage("/Index");
       }

@@ -21,6 +21,7 @@
                 <th scope="col">Image</th>
                 <th scope="col">Name</th>
                 <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
                 <th scope="col">Description</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -32,6 +33,7 @@
                   <td><img class="img-fluid" width="300" src="@product.ImageSrc" alt="@product.Name"></td>
                   <td>@product.Name</td>
                   <td>@product.Price.ToString("C", cultureInfo)</td>
+                  <td>@product.Quantity</td>
                   <td>@product.Description</td>
                   <td class="text-center">
                     <div class="d-flex flex-column flex-md-row justify-content-center align-items-center">

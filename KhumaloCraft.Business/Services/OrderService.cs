@@ -1,3 +1,4 @@
+using System.Text.Json;
 using KhumaloCraft.Business.Interfaces;
 using KhumaloCraft.Data.Entities;
 using KhumaloCraft.Data.Repositories.Interfaces;
@@ -14,14 +15,16 @@ public class OrderService : IOrderService
     _orderRepository = orderRepository;
   }
 
-  public async Task<List<OrderDTO>> GetOrdersByUserIdAsync(string userId)
+  public async Task<List<OrderDisplayDTO>> GetOrdersByUserIdAsync(string userId)
   {
     var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
 
-    return orders.Select(order => new OrderDTO
+    return orders.Select(order => new OrderDisplayDTO
     {
       OrderId = order.OrderId.ToString(),
       OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
       Items = order.OrderItems.Select(item => new OrderItemDTO
       {
         ProductName = item.Product.Name,
@@ -40,6 +43,8 @@ public class OrderService : IOrderService
       OrderId = order.OrderId.ToString(),
       UserId = order.UserId,
       OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
       User = new UserDTO
       {
         UserId = order.User.Id,
@@ -60,20 +65,34 @@ public class OrderService : IOrderService
     return orderDTOs;
   }
 
-  public async Task<OrderDTO?> GetOrderById(int orderId)
+  public async Task<OrderDisplayDTO> GetOrderById(int orderId)
   {
     var order = await _orderRepository.GetOrderByIdAsync(orderId);
+
     if (order == null) return null;
 
-    return new OrderDTO();
+    return new OrderDisplayDTO
+    {
+      OrderId = order.OrderId.ToString(),
+      OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
+      Items = order.OrderItems.Select(item => new OrderItemDTO
+      {
+        ProductName = item.Product.Name,
+        Quantity = item.Quantity,
+        Price = item.Product.Price
+      }).ToList()
+    };
   }
 
-  public async Task AddOrder(OrderDTO orderDTO)
+  public async Task<int> AddOrder(OrderDTO orderDTO)
   {
     var order = new Order
     {
       UserId = orderDTO.UserId,
       OrderDate = DateTime.Now,
+      StatusId = 1,
     };
 
     foreach (var itemDTO in orderDTO.Items)
@@ -89,6 +108,28 @@ public class OrderService : IOrderService
 
     await _orderRepository.AddOrderAsync(order);
     await _orderRepository.SaveChangesAsync();
+
+    return order.OrderId;
+  }
+
+  public async Task<OrderDisplayDTO> UpdateOrderStatusAsync(int orderId, int statusId)
+  {
+    var order = await _orderRepository.UpdateOrderStatusAsync(orderId, statusId);
+
+    return new OrderDisplayDTO
+    {
+      OrderId = order.OrderId.ToString(),
+      UserId = order.UserId,
+      OrderDate = order.OrderDate,
+      StatusId = order.StatusId,
+      StatusName = order.Status?.StatusName,
+      Items = order.OrderItems.Select(item => new OrderItemDTO
+      {
+        ProductName = item.Product.Name,
+        Quantity = item.Quantity,
+        Price = item.Product.Price
+      }).ToList()
+    };
   }
 
   public async Task CancelOrder(int orderId)

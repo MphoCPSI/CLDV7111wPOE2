@@ -1,8 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -22,7 +22,26 @@ namespace KhumaloCraft.Web.Pages
 
     public string GetCartId()
     {
-      return Request.Cookies["CartId"];
+      if (Request.Cookies.ContainsKey("CartId"))
+      {
+        return Request.Cookies["CartId"];
+      }
+
+      string? userId = null;
+      if (User.Identity?.IsAuthenticated == true)
+      {
+        var token = Request.Cookies["AuthToken"];
+        if (!string.IsNullOrEmpty(token))
+        {
+          var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+          var jwtToken = tokenHandler.ReadJwtToken(token);
+          userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+      }
+
+      string cartId = userId ?? Guid.NewGuid().ToString();
+
+      return cartId;
     }
 
     public async Task OnGetAsync()
@@ -52,59 +71,164 @@ namespace KhumaloCraft.Web.Pages
       }
     }
 
+    public async Task<IActionResult> OnPostEmptyCheckoutCartAsync(string cartId)
+    {
+      try
+      {
+        var response = await _httpClient.PostAsJsonAsync($"api/cart/clear", new CartRequestDTO { CartId = cartId });
+
+        if (response.IsSuccessStatusCode)
+        {
+          TempData["ToastMessage"] = "Your cart has been emptied.";
+          return RedirectToPage("/Cart");
+        }
+        else
+        {
+          TempData["ToastMessage"] = "An error occurred while emptying the cart. Please try again.";
+          return Page();
+        }
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, "Error clearing the cart for cartId: {CartId}", cartId);
+        TempData["ToastMessage"] = "An unexpected error occurred.";
+        return Page();
+      }
+    }
+
     public async Task<IActionResult> OnPostCheckoutCartAsync(string cartId)
     {
-      var response = await _httpClient.GetAsync($"api/cart/{cartId}");
+      var payload = new CartRequestDTO { CartId = cartId };
+      var jsonPayload = JsonSerializer.Serialize(payload);
+      var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-      if (!response.IsSuccessStatusCode)
+      string? userId = null;
+      if (User.Identity?.IsAuthenticated == true)
       {
-        return Page();
-      }
-
-      var jsonResponse = await response.Content.ReadAsStringAsync();
-      Cart = JsonSerializer.Deserialize<CartDTO>(jsonResponse, new JsonSerializerOptions
-      {
-        PropertyNameCaseInsensitive = true
-      });
-
-      if (Cart == null || !Cart.Items.Any())
-      {
-        return Page();
-      }
-
-      var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-      var orderDTO = new OrderDTO
-      {
-        UserId = userId,
-        Items = Cart.Items.Select(cartItem => new OrderItemDTO
+        var token = Request.Cookies["AuthToken"];
+        if (!string.IsNullOrEmpty(token))
         {
-          ProductId = cartItem.ProductId,
-          ProductName = cartItem.ProductName,
-          Price = cartItem.Price,
-          Quantity = cartItem.Quantity
-        }).ToList()
-      };
+          var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+          var jwtToken = tokenHandler.ReadJwtToken(token);
+          userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
 
-      var orderContent = new StringContent(JsonSerializer.Serialize(orderDTO), Encoding.UTF8, "application/json");
+        var linkCartData = new CartLinkDTO
+        {
+          cartId = userId,
+          userId = userId
+        };
 
-      // Post the order to the API
-      var orderResponse = await _httpClient.PostAsync("api/orders/create", orderContent);
+        var cartLinkData = new StringContent(JsonSerializer.Serialize(linkCartData), Encoding.UTF8, "application/json");
 
-      if (!orderResponse.IsSuccessStatusCode)
-      {
-        return Page();
+        await _httpClient.PostAsync("api/cart/link", cartLinkData);
       }
 
-      /*       var clearCartResponse = await _httpClient.DeleteAsync($"api/cart/{cartId}");
-            if (!clearCartResponse.IsSuccessStatusCode)
+      try
+      {
+        var response = await _httpClient.PostAsync("api/orders/create", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+          TempData["ToastMessage"] = "An error occurred. Please try again.";
+          return Page();
+        }
+
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+
+        var standardResponse = JsonSerializer.Deserialize<Response<string>>(jsonResponse, new JsonSerializerOptions
+        {
+          PropertyNameCaseInsensitive = true
+        });
+
+        if (standardResponse != null && standardResponse.Success && !string.IsNullOrEmpty(standardResponse.Data))
+        {
+          var orchestrationData = JsonSerializer.Deserialize<OrchestrationStartResponse>(standardResponse.Data, new JsonSerializerOptions
+          {
+            PropertyNameCaseInsensitive = true
+          });
+
+          if (orchestrationData != null)
+          {
+            if (!string.IsNullOrEmpty(orchestrationData.StatusQueryGetUri))
             {
-              return Page();
-            } */
+              var pollingResult = await PollOrchestrationStatusAsync(orchestrationData.StatusQueryGetUri);
 
-      TempData["OrderDTO"] = JsonSerializer.Serialize(orderDTO);
+              if (pollingResult.Success)
+              {
+                TempData["OrderId"] = pollingResult.Data;
+                return RedirectToPage("/Checkout");
+              }
+              else
+              {
+                TempData["ToastMessage"] = pollingResult.Message;
+                await OnGetAsync();
+                return Page();
+              }
+            }
+          }
+        }
 
-      return RedirectToPage("/Checkout");
+        TempData["ToastMessage"] = standardResponse?.Message ?? "An error occurred. Please try again.";
+        return Page();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+        await OnGetAsync();
+        TempData["ToastMessage"] = "An error occurred. Please try again.";
+        return Page();
+      }
+    }
+
+
+    private async Task<Response<string>> PollOrchestrationStatusAsync(string statusUrl)
+    {
+      var maxRetries = 10;
+      var delay = TimeSpan.FromSeconds(3);
+
+      for (int i = 0; i < maxRetries; i++)
+      {
+        var statusResponse = await _httpClient.GetAsync(statusUrl);
+        if (statusResponse.IsSuccessStatusCode)
+        {
+          var statusContent = await statusResponse.Content.ReadAsStringAsync();
+
+          var orchestrationStatus = JsonSerializer.Deserialize<OrchestrationStatus>(statusContent);
+
+          if (orchestrationStatus != null)
+          {
+            if (orchestrationStatus.RuntimeStatus == "Completed")
+            {
+              if (orchestrationStatus.Output?.Success == true)
+              {
+                var orderId = orchestrationStatus.Output.Data?.OrderId;
+
+                if (!string.IsNullOrEmpty(orderId))
+                {
+                  return Response<string>.SuccessResponse(orderId);
+                }
+                else
+                {
+                  return Response<string>.ErrorResponse("OrderId is missing in the response.");
+                }
+              }
+              else
+              {
+                return Response<string>.ErrorResponse(orchestrationStatus.Output?.Message ?? "Order processing encountered an error.");
+              }
+            }
+            else if (orchestrationStatus.RuntimeStatus == "Failed")
+            {
+              return Response<string>.ErrorResponse("Order processing failed. Please try again.");
+            }
+          }
+        }
+
+        await Task.Delay(delay);
+      }
+
+      return Response<string>.ErrorResponse("Order processing is taking longer than expected. Please check again later.");
     }
   }
 }

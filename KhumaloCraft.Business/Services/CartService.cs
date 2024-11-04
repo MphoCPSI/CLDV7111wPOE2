@@ -37,6 +37,16 @@ public class CartService
     };
   }
 
+  public async Task<string> GetUserByCartIdAsync(string cartId)
+  {
+    var userId = await _cartRepository.GetUserByCartIdAsync(cartId);
+    if (userId == null)
+    {
+      return null;
+    }
+    return userId;
+  }
+
   public void AddToCart(string cartId, int productId, string productName, decimal price)
   {
     var cart = _cartRepository.GetCartById(cartId);

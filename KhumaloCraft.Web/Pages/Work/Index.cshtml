@@ -1,29 +1,32 @@
 ﻿@page
 @model KhumaloCraft.Pages.Work.IndexModel
 @{
-    ViewData["Title"] = "My work";
+    ViewData["Title"] = "My Work";
 }
 
-<div class="work">
-    <div class="row align-items-center justify-content-center text-center text-lg-start top-5 py-5">
-        <div class="col-10 col-sm-8 col-lg-6 py-5">
-            <h2 class="fs-1 fw-bold lh-1 mb-3">Products</h2>
+<!-- Hero Section -->
+<section class="py-5 text-center bg-dark text-white">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold mb-4">Discover Our Handcrafted Products</h1>
+        <p class="lead mb-5">Meticulously handcrafted by talented artisans from Southern Africa, our unique products reflect the vibrant culture and spirit of our nation, with a global appeal.</p>
+    </div>
+</section>
 
-            <p class="fs-5 mb-4">
-                Our merchandise is meticulously handcrafted by talented artisans from Southern Africa, using materials sourced locally. These unique items reflect the vibrant spirit and culture of our diverse nation. Each product we offer carries a distinctive African touch, yet appeals to a global audience.
-            </p>
+
+<section>
+    @await Html.PartialAsync("../Shared/Components/_ProductItems.cshtml", Model.ProductList)
+</section>
+
+
+<!-- Info Banner -->
+<section class="py-5 bg-primary text-white">
+    <div class="container py-5">
+        <div class="row align-items-center justify-content-center text-center text-lg-start">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold">Elevate Your Space with Artisanal Craft</h2>
+                <p class="lead mb-4">Our unique, handcrafted products blend traditional artistry with modern design. Discover how these exceptional pieces can elevate your living space or office.</p>
+                <a href="/Contact" class="btn btn-light btn-lg fw-bold">Add your collection</a>
+            </div>
         </div>
-
-        <div class="col-lg-4 offset-lg-2">
-            <img class="shadow" src="/images/product-items.jpeg" alt="" width="100%">
-        </div>
     </div>
-
-    <div class="row">
-        @await Html.PartialAsync("../Shared/Components/_ProductItems.cshtml", Model.ProductList)
-    </div>
-
-    <div class="row top-5">
-        @await Html.PartialAsync("../Shared/Components/_InfoBanner.cshtml")
-    </div>
-</div>
+</section>

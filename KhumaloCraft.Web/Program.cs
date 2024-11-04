@@ -1,9 +1,12 @@
 using System.Text;
+using KhumaloCraft.Web;
 using KhumaloCraft.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 // Add services to the container
 builder.Services.AddRazorPages();
@@ -92,6 +95,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/notificationHub");
 app.MapRazorPages();
 
 app.Run();

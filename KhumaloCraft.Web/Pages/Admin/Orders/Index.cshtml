@@ -53,7 +53,36 @@
             </div>
 
             <!-- Toggle Button for Collapsible Order Items -->
-            <div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <!-- Order Status -->
+              <form method="post" asp-page-handler="UpdateStatus" id="statusForm-@order.OrderId">
+                <div class="form-group mb-0 flex-grow-1 me-3">
+                  <!-- Dropdown for StatusId -->
+                  <select name="statusId" class="form-control border-2 border-bottom" onchange="submitForm('@order.OrderId')">
+                    <option value="">-- Select Status --</option>
+                    @foreach (var status in Model.StatusList)
+                    {
+                      // Use conditional rendering for the selected attribute
+                      if (status.StatusId == order.StatusId)
+                      {
+                        <option value="@status.StatusId" selected>@status.StatusName</option>
+                      }
+                      else
+                      {
+                        <option value="@status.StatusId">@status.StatusName</option>
+                      }
+                    }
+                  </select>
+                  <!-- Validation message for StatusId -->
+                  <span asp-validation-for="@order.StatusId" class="text-danger small"></span>
+                </div>
+
+                <!-- Hidden field to pass the orderId -->
+                <input type="hidden" name="orderId" value="@order.OrderId" />
+              </form>
+
+
+              <!-- View Items Button -->
               <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#orderItems-@order.OrderId" aria-expanded="false">
                 View Items
               </button>
@@ -89,3 +118,26 @@
     }
   }
 </div>
+
+<script>
+  async function submitForm(orderId) {
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    const statusId = document.querySelector(`#statusForm-${orderId} select[name="statusId"]`).value;
+
+    // Prepare the payload
+    const payload = { orderId: parseInt(orderId), statusId: parseInt(statusId) };
+
+    try {
+      const response = await fetch(`/Admin/Orders/Index?handler=UpdateStatus`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "RequestVerificationToken": token
+        },
+        body: JSON.stringify(payload)
+      });
+    } catch (error) {
+      console.error("Error in updating status:", error);
+    }
+  }
+</script>

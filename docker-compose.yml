@@ -1,6 +1,7 @@
 version: '3.4'
 
 services:
+  # starts the frontend UI Service
   khumalocraftweb:
     image: khumalocraft-web
     build:
@@ -13,6 +14,7 @@ services:
     depends_on:
       - khumalocraftapi
 
+  # Starts the Backend API service
   khumalocraftapi:
     image: khumalocraft-api
     build:
@@ -25,6 +27,7 @@ services:
     depends_on:
       - sqlserver
 
+  # Starts the Database layer service
   sqlserver:
     image: mcr.microsoft.com/mssql/server
     environment:

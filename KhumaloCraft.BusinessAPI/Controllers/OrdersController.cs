@@ -1,8 +1,7 @@
 using KhumaloCraft.Business.Interfaces;
-using KhumaloCraft.Business.Services;
 using KhumaloCraft.Shared.DTOs;
+using KhumaloCraft.Shared.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KhumaloCraft.BusinessAPI.Controllers
@@ -12,10 +11,26 @@ namespace KhumaloCraft.BusinessAPI.Controllers
   public class OrdersController : ControllerBase
   {
     private readonly IOrderService _orderService;
+    private readonly IFunctionTriggerService _functionTriggerService;
 
-    public OrdersController(IOrderService orderService)
+    public OrdersController(IOrderService orderService, IFunctionTriggerService functionTriggerService)
     {
       _orderService = orderService;
+      _functionTriggerService = functionTriggerService;
+    }
+
+
+    [HttpGet("{orderId}")]
+    public async Task<IActionResult> GetOrderById(int orderId)
+    {
+      var orders = await _orderService.GetOrderById(orderId);
+
+      if (orders == null)
+      {
+        return NotFound("No orders found for this user.");
+      }
+
+      return Ok(orders);
     }
 
     [HttpGet("user/{userId}")]
@@ -40,10 +55,34 @@ namespace KhumaloCraft.BusinessAPI.Controllers
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateOrder([FromBody] OrderDTO orderDTO)
+    public async Task<IActionResult> CreateOrder([FromBody] CartRequestDTO cartRequestDTO)
     {
-      await _orderService.AddOrder(orderDTO);
-      return Ok("Order added successfully");
+      try
+      {
+        var response = await _functionTriggerService.StartOrderProcessingOrchestratorAsync(cartRequestDTO);
+
+        return Accepted(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, new { Success = false, Message = $"An internal error occurred: {ex.Message}" });
+      }
+    }
+
+    [HttpPut("{orderId}/status")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateStatus(int orderId, [FromBody] StatusDTO statusDTO)
+    {
+      var order = await _orderService.UpdateOrderStatusAsync(orderId, statusDTO.StatusId);
+
+      await _functionTriggerService.StartNotificationsOrchestratorAsync(new NotificationRequest
+      {
+        Status = order.StatusName,
+        UserId = order.UserId,
+        OrderId = orderId.ToString(),
+      });
+
+      return Ok($"Order status updated successfully.");
     }
   }
 }

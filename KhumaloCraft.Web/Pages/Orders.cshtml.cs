@@ -24,7 +24,7 @@ namespace KhumaloCraft.Web.Pages
 
       if (string.IsNullOrEmpty(userId))
       {
-        Orders = new List<OrderDisplayDTO>();  // No orders if user is not authenticated
+        Orders = new List<OrderDisplayDTO>();
         return;
       }
 

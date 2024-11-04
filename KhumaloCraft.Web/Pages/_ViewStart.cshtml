@@ -1,3 +1,6 @@
-﻿@{
+﻿@inject IConfiguration Configuration
+@{
     Layout = "_Layout";
+    ViewData["SignalRHubUrl"] = Configuration["ConnectionStrings:HubUrl"];
+    ViewData["ApiHost"] = Configuration["ConnectionStrings:ApiHost"];
 }

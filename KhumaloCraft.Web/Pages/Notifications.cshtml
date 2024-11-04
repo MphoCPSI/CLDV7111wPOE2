@@ -1,0 +1,58 @@
+﻿@page
+@model KhumaloCraft.Web.Pages.NotificationsModel
+@{
+  ViewData["Title"] = "Notifications";
+}
+
+<div class="container-fluid p-0">
+  <section class="text-center py-5 bg-light">
+    <div class="container py-5">
+      <h1 class="display-4 text-center mb-4">Notifications</h1>
+      <p class="text-center">Review your order status and updates.</p>
+
+      <!-- Link to view only unread notifications -->
+      <a asp-page-handler="LoadNotificationsAsync" class="btn btn-primary mb-3">View All Notifications</a>
+      <a asp-page-handler="Unread" class="btn btn-info mb-3">View Unread Notifications</a>
+
+      @if (Model.Notifications == null || !Model.Notifications.Any())
+      {
+        <div class="alert alert-info text-center mt-5">No notifications available.</div>
+      }
+      else
+      {
+        <div class="list-group mt-5">
+          @foreach (var notification in Model.Notifications)
+          {
+            <div class="list-group-item d-flex align-items-center justify-content-between">
+
+              <!-- Status Badge with Icon -->
+              <div class="me-3 text-center" style="width:80px">
+                <span class="badge @(notification.IsRead ? "bg-success" : "bg-warning") d-flex align-items-center justify-content-center p-2">
+                  <i class="bi @(notification.IsRead ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-1"></i>
+                  @(notification.IsRead ? "Read" : "Unread")
+                </span>
+              </div>
+
+              <!-- Notification Message and Timestamp -->
+              <div class="flex-grow-1 d-flex flex-column">
+                <p class="mb-1 fs-5 text-dark fw-bold">@notification.Message</p>
+                <small class="text-muted">@notification.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</small>
+              </div>
+
+              <!-- Fixed-width Container for Button -->
+              <div class="ms-3" style="width: 120px;">
+                @if (!notification.IsRead)
+                {
+                  <form method="post" asp-page-handler="MarkAsRead" asp-route-notificationId="@notification.Id">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Mark as Read</button>
+                  </form>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+      }
+    </div>
+  </section>
+</div>

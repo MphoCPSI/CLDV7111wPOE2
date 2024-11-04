@@ -69,7 +69,20 @@ namespace KhumaloCraft.Pages.Work
         return Request.Cookies["CartId"];
       }
 
-      string cartId = Guid.NewGuid().ToString();
+      string? userId = null;
+      if (User.Identity?.IsAuthenticated == true)
+      {
+        var token = Request.Cookies["AuthToken"];
+        if (!string.IsNullOrEmpty(token))
+        {
+          var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+          var jwtToken = tokenHandler.ReadJwtToken(token);
+          userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+      }
+
+      string cartId = userId ?? Guid.NewGuid().ToString();
+
       Response.Cookies.Append("CartId", cartId, new CookieOptions
       {
         Expires = DateTimeOffset.UtcNow.AddDays(30),

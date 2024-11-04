@@ -5,31 +5,30 @@
     var usedIndices = new HashSet<int> { randomImage };
 }
 
-<div class="row align-items-md-center border py-5">
-    <div class="col-12 col-lg-6 d-flex flex-column align-items-center">
-        <h4 class="fs-2 fw-bold mb-4">Featured Products</h4>
-        <img src="@(Model[randomImage].ImageSrc).png" alt="Sculpture @(Model[randomImage].Name)" height="350" class="border shadow mb-3" />
-        <h4 class="fs-5 fw-semibold mb-0 text-body-emphasis">@(Model[randomImage].Name)</h4>
-    </div>
-
-    <div class="col-12 col-lg-6">
-        <div class="row row-cols-2 row-cols-sm-3">
-            @for (int i = 1; i < 7; i++)
+<!-- Refined Featured Products Section -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <!-- Supporting Products Grid -->
+        <div class="row g-4">
+            @for (int i = 0; i < 4; i++)
             {
                 int imageNumber;
-
                 do
                 {
                     imageNumber = random.Next(0, Model.Count);
                 } while (usedIndices.Contains(imageNumber));
-
                 usedIndices.Add(imageNumber);
 
-                <div class="col d-flex flex-column gap-2 align-items-center text-center g-5">
-                    <img class="shadow border" src="@(Model[imageNumber].ImageSrc)" alt="Handmade Craft @(Model[imageNumber].Name)" height="150" />
-                    <h4 class="fs-6 fw-semibold text-body-emphasis">@(Model[imageNumber].Name)</h4>
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm border-0 h-100">
+                        <img src="@(Model[imageNumber].ImageSrc)" class="card-img-top rounded" alt="Craft @(Model[imageNumber].Name)">
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold mb-3">@Model[imageNumber].Name</h5>
+                            <a href="/Work/Index" class="btn btn-outline-dark btn-sm">View Product</a>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
     </div>
-</div>
+</section>

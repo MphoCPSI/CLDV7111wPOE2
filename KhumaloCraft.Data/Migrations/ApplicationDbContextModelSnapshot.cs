@@ -93,23 +93,70 @@ namespace KhumaloCraft.Data.Migrations
                         new
                         {
                             CategoryId = 1,
-                            CategoryName = "Summer Collection"
+                            CategoryName = "Handcrafted Animals"
                         },
                         new
                         {
                             CategoryId = 2,
-                            CategoryName = "Winter Collection"
+                            CategoryName = "Mythical Creatures"
                         },
                         new
                         {
                             CategoryId = 3,
-                            CategoryName = "Autumn Collection"
+                            CategoryName = "Wooden People"
                         },
                         new
                         {
                             CategoryId = 4,
-                            CategoryName = "Spring Collection"
+                            CategoryName = "Decorative Statues"
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            CategoryName = "Miniature Landscapes"
+                        },
+                        new
+                        {
+                            CategoryId = 6,
+                            CategoryName = "Ornamental Carvings"
+                        },
+                        new
+                        {
+                            CategoryId = 7,
+                            CategoryName = "Fantasy Figures"
+                        },
+                        new
+                        {
+                            CategoryId = 8,
+                            CategoryName = "Cultural Figurines"
                         });
+                });
+
+            modelBuilder.Entity("KhumaloCraft.Data.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("KhumaloCraft.Data.Entities.Order", b =>
@@ -123,11 +170,16 @@ namespace KhumaloCraft.Data.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("OrderId");
+
+                    b.HasIndex("StatusId");
 
                     b.HasIndex("UserId");
 
@@ -207,17 +259,17 @@ namespace KhumaloCraft.Data.Migrations
                             ImageSrc = "https://iili.io/diXdT67.png",
                             Name = "Naledi Gaze",
                             Price = 1200.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 2,
-                            CategoryId = 1,
+                            CategoryId = 7,
                             Description = "Whispering wings is a charming wooden sculpture of western screech-Owl, expertly carved from a single piece of soft, gray wood. The artist’s attention to details brings the small owl to life, as it perches quietly, its wings folded, exuding a sense of gentle wisdom.",
                             ImageSrc = "https://iili.io/diXdAF9.png",
                             Name = "Whispering Wings",
                             Price = 1500.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
@@ -232,12 +284,12 @@ namespace KhumaloCraft.Data.Migrations
                         new
                         {
                             ProductId = 4,
-                            CategoryId = 1,
+                            CategoryId = 2,
                             Description = "Hoppy Sindile is a delightful wooden sculpture of a kangaroo in mid-hop, expertly carved from a single piece of rich, Walnut wood. The artist’s attention to details brings the marsupial to life, from the powerful hind legs to the joyful, carefree expression.",
                             ImageSrc = "https://iili.io/diXdIGS.png",
                             Name = "Hoppy Sindile",
                             Price = 1750.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
@@ -247,17 +299,17 @@ namespace KhumaloCraft.Data.Migrations
                             ImageSrc = "https://iili.io/diXd58u.png",
                             Name = "Uhlanga Lwenyoni",
                             Price = 1400.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 6,
-                            CategoryId = 1,
+                            CategoryId = 6,
                             Description = "Azure Blue Jay Songster is a vibrant wooden sculpture of a blue jay in mid-song, expertly carved from a single piece of rich, blue-stained wood. The artist’s attention to detail brings the bird to life from the intricate feathers to the joyful, open beak.",
                             ImageSrc = "https://iili.io/diXdRae.png",
                             Name = "Azure Blue Jay Songster",
                             Price = 1500.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
@@ -287,22 +339,22 @@ namespace KhumaloCraft.Data.Migrations
                             ImageSrc = "https://iili.io/diXdcwx.png",
                             Name = "Dekeledi",
                             Price = 1900.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 10,
-                            CategoryId = 1,
+                            CategoryId = 5,
                             Description = "Curios Curlew is a delightful wooden sculpture of a bird with its long nose, expertly carved from a single piece of warm, golden wood. The artist's attention to details brings life to the bird, as it sniffs and explores its surroundings with its uniquely shaped beak.",
                             ImageSrc = "https://iili.io/diXdlZQ.png",
                             Name = "Curios Curlew",
                             Price = 1200.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 11,
-                            CategoryId = 1,
+                            CategoryId = 2,
                             Description = "Bombastic Glance is a captivating wooden sculpture of a partridge bird, expertly carved from a single piece of warm, golden wood. The artist's attention to details brings the bird to life, as it turns its head away, lost in thought.",
                             ImageSrc = "https://iili.io/diXd1nV.png",
                             Name = "Bombastic Glance",
@@ -327,27 +379,122 @@ namespace KhumaloCraft.Data.Migrations
                             ImageSrc = "https://iili.io/diXdVF1.png",
                             Name = "Sightless Peace",
                             Price = 1150.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 14,
-                            CategoryId = 1,
+                            CategoryId = 4,
                             Description = "Fluffy Friend is a delightful wooden sculpture of a little rabbit, expertly carved from a single piece of soft, white Basswood. The artist’s attention to details brings the adorable rabbit to life, from its twitching whiskers to its cuddly, rounded body.",
                             ImageSrc = "https://iili.io/diXdWcF.png",
                             Name = "Fluffy Friend",
                             Price = 1240.00m,
-                            Quantity = 0
+                            Quantity = 1
                         },
                         new
                         {
                             ProductId = 15,
-                            CategoryId = 1,
+                            CategoryId = 2,
                             Description = "Wise Madala is a majestic wooden sculpture of an old owl, carved from a single piece of rich dark wood. The artist's attention to details brings the wise bird to life, from its knowing gaze to its weathered, aged feathers.",
                             ImageSrc = "https://iili.io/diXdX8g.png",
                             Name = "Wise Madala",
                             Price = 1190.00m,
-                            Quantity = 0
+                            Quantity = 1
+                        });
+                });
+
+            modelBuilder.Entity("KhumaloCraft.Data.Entities.Status", b =>
+                {
+                    b.Property<int>("StatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusId"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("StatusId");
+
+                    b.ToTable("Status");
+
+                    b.HasData(
+                        new
+                        {
+                            StatusId = 1,
+                            StatusName = "Pending"
+                        },
+                        new
+                        {
+                            StatusId = 2,
+                            StatusName = "Processing"
+                        },
+                        new
+                        {
+                            StatusId = 3,
+                            StatusName = "Shipped"
+                        },
+                        new
+                        {
+                            StatusId = 4,
+                            StatusName = "Completed"
+                        },
+                        new
+                        {
+                            StatusId = 5,
+                            StatusName = "On Hold"
+                        },
+                        new
+                        {
+                            StatusId = 6,
+                            StatusName = "Canceled"
+                        },
+                        new
+                        {
+                            StatusId = 7,
+                            StatusName = "Refunded"
+                        },
+                        new
+                        {
+                            StatusId = 8,
+                            StatusName = "Partially Refunded"
+                        },
+                        new
+                        {
+                            StatusId = 9,
+                            StatusName = "Failed"
+                        },
+                        new
+                        {
+                            StatusId = 10,
+                            StatusName = "Awaiting Payment"
+                        },
+                        new
+                        {
+                            StatusId = 11,
+                            StatusName = "Awaiting Fulfillment"
+                        },
+                        new
+                        {
+                            StatusId = 12,
+                            StatusName = "Backordered"
+                        },
+                        new
+                        {
+                            StatusId = 13,
+                            StatusName = "Returned"
+                        },
+                        new
+                        {
+                            StatusId = 14,
+                            StatusName = "Partially Shipped"
+                        },
+                        new
+                        {
+                            StatusId = 15,
+                            StatusName = "Awaiting Pickup"
                         });
                 });
 
@@ -585,11 +732,19 @@ namespace KhumaloCraft.Data.Migrations
 
             modelBuilder.Entity("KhumaloCraft.Data.Entities.Order", b =>
                 {
+                    b.HasOne("KhumaloCraft.Data.Entities.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("KhumaloCraft.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });

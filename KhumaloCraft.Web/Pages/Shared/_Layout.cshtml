@@ -1,20 +1,21 @@
-﻿@{
+﻿@using System.Security.Claims
+@{
   var menuItems = new List<dynamic>
-  {
-    new { Page = "/Index", Text = "Home" },
-    new { Page = "/About", Text = "About us" },
-    new { Page = "/Work/Index", Text = "My work" },
-    new { Page = "/Contact", Text = "Contact us" }
-  };
+{
+new { Page = "/Index", Text = "Home" },
+new { Page = "/About", Text = "About us" },
+new { Page = "/Work/Index", Text = "My work" },
+new { Page = "/Contact", Text = "Contact us" }
+};
 
   var adminItems = new List<dynamic>
-  {
-    new { Page = "/Admin/Categories/Index", Text = "Categories" },
-    new { Page = "/Admin/Products/Index", Text = "Products" },
-    new { Page = "/Admin/Orders/Index", Text = "Orders" },
-@*     new { Page = "/Admin/Shipping/Index", Text = "Shipping" },
-    new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
-  };
+{
+new { Page = "/Admin/Categories/Index", Text = "Categories" },
+new { Page = "/Admin/Products/Index", Text = "Products" },
+new { Page = "/Admin/Orders/Index", Text = "Orders" },
+  @* new { Page = "/Admin/Shipping/Index", Text = "Shipping" },
+new { Page = "/Admin/Payments/Index", Text = "Payments" }, *@
+};
 }
 
 <!DOCTYPE html>
@@ -33,19 +34,94 @@
 <body class="d-flex flex-column min-vh-100">
   @await Html.PartialAsync("_Header.cshtml", Tuple.Create(menuItems, adminItems))
 
-  <div class="container flex-grow-1">
-    <main role="main" class="pb-3">
+  <div class="flex-grow-1">
+    <main role="main">
       @RenderBody()
     </main>
   </div>
 
   @await Html.PartialAsync("_Footer.cshtml", menuItems)
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
   <script src="~/lib/jquery/dist/jquery.min.js"></script>
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
 
   @await RenderSectionAsync("Scripts", required: false)
+
+  <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 2000">
+    <div id="snackbarToast" class="toast bg-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+      <div class="toast-header">
+        <strong class="me-auto">New Notification!</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+
+      <div class="toast-body fw-bold">
+        <!-- Message will be injected here -->
+      </div>
+    </div>
+  </div>
+
+  @if (TempData["ToastMessage"] != null)
+  {
+    <script>
+      showToast("@TempData["ToastMessage"]");
+    </script>
+  }
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      let newMessageCount = 0; // Initialize the new message counter
+
+      const signalRHubUrl = "@ViewData["SignalRHubUrl"]";
+      const apiHost = "@ViewData["ApiHost"]";
+
+      const connection = new signalR.HubConnectionBuilder()
+        .withUrl(signalRHubUrl)
+        .build();
+
+      // Update badge with the current message count
+      function updateMessageCount() {
+        const badgeElement = document.getElementById("notificationBadge");
+        if (newMessageCount > 0) {
+          badgeElement.textContent = newMessageCount;
+          badgeElement.style.display = "inline"; // Show badge if count > 0
+        } else {
+          badgeElement.style.display = "none"; // Hide badge if no new messages
+        }
+      }
+
+      // Display toast and increment message count on new message
+      connection.on("ReceiveNotification", function (message) {
+        showToast(message);
+        newMessageCount++; // Increment the count for new messages
+        updateMessageCount(); // Update badge
+      });
+
+      connection.start()
+        .then(() => console.log("Connected to SignalR"))
+        .catch(err => console.error("Error connecting to SignalR:", err));
+
+      try {
+        // Fetch unread notifications on page load
+        const userId = "@User.FindFirstValue(ClaimTypes.NameIdentifier)";
+        const response = await fetch(`${apiHost}api/notifications/user/${userId}/unread`);
+
+        if (!response.ok) {
+          console.error("Failed to fetch notifications:", response.status);
+          return;
+        }
+
+        const notifications = await response.json();
+        // Set the initial count of unread messages
+        newMessageCount = notifications.filter(n => !n.isRead).length;
+        updateMessageCount(); // Update the badge on load with the initial count
+
+      } catch (error) {
+        console.error("Error fetching unread notifications:", error);
+      }
+    });
+  </script>
 </body>
 
 </html>

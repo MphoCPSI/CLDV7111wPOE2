@@ -1,53 +1,67 @@
 @using System.Globalization
 @model List<ProductDTO>
 
-<div class="d-flex justify-content-center align-items-center flex-column py-5 my-5 rounded-4 border bg-light">
+<!-- Products Section -->
+<section class="py-5 bg-light">
   <div class="container">
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="d-flex flex-column flex-lg-row justify-content-end gap-2">
-          <input type="text" class="form-control w-25 d-inline" placeholder="Search">
-          <select class="form-select w-25 d-inline">
-            <option selected>Latest</option>
-            <option value="1">Oldest</option>
-            <option value="2">Highest price</option>
-            <option value="3">Lowest price</option>
-          </select>
-        </div>
+    <!-- Search and Filter -->
+    <div class="row mb-4 justify-content-between align-items-center">
+      <div class="col-lg-8 col-md-6 mb-3">
+        <h2 class="fs-1 fw-bold">Explore Our Collection</h2>
+        <p class="text-muted">Handcrafted items with a distinctive African touch, appealing to global audiences.</p>
       </div>
 
-      <div class="w-100 border-top" style="border-top-color: black; margin: 2.5rem 0;"></div>
+      <div class="col-lg-4 col-md-6 d-flex flex-column flex-lg-row justify-content-lg-end gap-2">
+        <input type="text" class="form-control mb-2 mb-lg-0" placeholder="Search Products">
+        <select class="form-select">
+          <option selected>Sort by: Latest</option>
+          <option value="1">Oldest</option>
+          <option value="2">Highest Price</option>
+          <option value="3">Lowest Price</option>
+        </select>
+      </div>
+    </div>
 
-      @foreach (var sculture in Model)
+    <!-- Product Grid -->
+    <div class="row g-4">
+      @foreach (var sculpture in Model)
       {
-        <div class="col-lg-3 col-md-3 col-sm-6 mb-3">
-          <div class="card border-2 shadow-sm">
-            <img src="@(sculture.ImageSrc)" alt="Product - @(sculture.Name)">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+          <div class="card h-100 border-0 shadow-sm rounded-3">
+            <img src="@sculpture.ImageSrc" alt="Product - @sculpture.Name" class="card-img-top img-fluid rounded-top">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fw-bold">@sculpture.Name</h5>
+              <p class="card-text text-muted text-clamp mb-2">@sculpture.Description</p>
+              <p class="mb-2"><strong>Price:</strong> @sculpture.Price.ToString("C", new CultureInfo("en-ZA"))</p>
+              <p class="mb-2"><strong>Category:</strong> @sculpture.CategoryName</p>
+              <p class="mb-3"><strong>Quantity:</strong> @sculpture.Quantity</p>
 
-            <div class="card-body">
-              <h5 class="card-title">@sculture.Name</h5>
-              <p class="card-text text-clamp">@sculture.Description</p>
-              <p class="card-text"><strong>Price:</strong> @sculture.Price.ToString("C", new CultureInfo("en-ZA"))</p>
-              <p class="card-text"><strong>Category:</strong> @sculture.CategoryName</p>
-              <p class="card-text"><strong>Quantity:</strong> @sculture.Quantity</p>
-
-              @if (sculture.Quantity > 0)
-              {
-                <form method="post" asp-page-handler="AddToCart">
-                  <input type="hidden" name="productId" value="@sculture.ProductId" />
-                  <input type="hidden" name="productName" value="@sculture.Name" />
-                  <input type="hidden" name="price" value="@sculture.Price" />
-                  <button class="btn btn-secondary" type="submit">Add to Cart</button>
-                </form>
-              }
-              else
-              {
-                <button class="btn btn-danger" disabled>Out of Stock</button>
-              }
+              <div class="mt-auto">
+                @if (sculpture.Quantity > 0)
+                {
+                  @if (!User.Identity.IsAuthenticated)
+                  {
+                    <a href="@Url.Page("/Auth/Login")" class="btn btn-primary btn-block">Add to Cart</a>
+                  }
+                  else
+                  {
+                    <form method="post" asp-page-handler="AddToCart">
+                      <input type="hidden" name="productId" value="@sculpture.ProductId" />
+                      <input type="hidden" name="productName" value="@sculpture.Name" />
+                      <input type="hidden" name="price" value="@sculpture.Price" />
+                      <button class="btn btn-primary btn-block" type="submit">Add to Cart</button>
+                    </form>
+                  }
+                }
+                else
+                {
+                  <button class="btn btn-danger btn-block" disabled>Out of Stock</button>
+                }
+              </div>
             </div>
           </div>
         </div>
       }
     </div>
   </div>
-</div>
+</section>

@@ -40,6 +40,13 @@
             <span asp-validation-for="Product.ImageSrc" class="text-danger small"></span>
           </div>
 
+          <!-- Product Price -->
+          <div class="form-group mb-4">
+            <label asp-for="Product.Quantity" class="form-label fw-semibold">Product Quantity</label>
+            <input asp-for="Product.Quantity" type="number" class="form-control border-0 border-bottom" placeholder="Enter product price" />
+            <span asp-validation-for="Product.Quantity" class="text-danger small"></span>
+          </div>
+
           <!-- Product Category -->
           <div class="form-group mb-4">
             <label asp-for="Product.CategoryId" class="form-label fw-semibold">Category</label>
